@@ -1,4 +1,3 @@
-// App.jsx
 import { useState } from "react";
 import AuthGate from "./components/AuthGate";
 import { searchMovies, posterUrl } from "./api/tmdb";
@@ -13,11 +12,13 @@ export default function App() {
   const [page, setPage] = useState("home"); 
 
   async function search() {
-    const r = await searchMovies(query);
-    setResults(r.results || []);
+    if (query.trim()) {
+      const r = await searchMovies(query);
+      setResults(r.results || []);
+    }
   }
 
-  function goBack() {
+  function clearSearch() {
     setQuery("");
     setResults([]);
   }
@@ -33,30 +34,54 @@ export default function App() {
       <>
         <div style={{ display: "flex", gap: 8, marginTop: 20 }}>
           <input
-            style={{ flex: 1, padding: 10 }}
+            style={{ flex: 1, padding: 10, border: "1px solid #ccc", borderRadius: 4 }}
             placeholder="Search movies..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            onKeyPress={(e) => { // keypress enter
+              if (e.key === 'Enter') {
+                search();
+              }
+            }}
           />
           
-          {isSearching ? (
+          <button
+            style={{ 
+              padding: "10px 14px", 
+              background: "black", 
+              color: "white", 
+              borderRadius: 4,
+              border: 'none',
+              fontSize: '1.2em' 
+            }}
+            onClick={search}
+            title="Search"
+          >
+            🔍
+          </button>
+          
+          {isSearching && (
             <button
-              style={{ padding: "10px 14px", background: "gray", color: "white" }}
-              onClick={goBack}
+              style={{ 
+                padding: "10px 14px", 
+                background: "gray", 
+                color: "white", 
+                borderRadius: 4,
+                border: 'none',
+                fontSize: '1.2em' 
+              }}
+              onClick={clearSearch}
+              title="Clear Search"
             >
-              Back
-            </button>
-          ) : (
-            <button
-              style={{ padding: "10px 14px", background: "black", color: "white" }}
-              onClick={search}
-            >
-              Go
+              ❌
             </button>
           )}
         </div>
 
-        {results.map((m) => (
+
+        {results
+          .filter((m) => m.poster_path) 
+          .map((m) => (
           <div
             key={m.id}
             style={{
@@ -64,14 +89,34 @@ export default function App() {
               padding: 12,
               border: "1px solid #ccc",
               borderRadius: 6,
+              display: "flex",
+              gap: 15,
+              alignItems: "flex-start",
             }}
           >
             <img
               src={posterUrl(m.poster_path)}
-              style={{ width: 90, borderRadius: 4 }}
+              alt={`${m.title} poster`}
+              style={{ width: 90, minWidth: 90, borderRadius: 4 }}
             />
-            <div style={{ fontWeight: 600, marginTop: 8 }}>{m.title}</div>
-            <DiaryEntryForm user={auth.currentUser} movie={m} />
+            
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 600, fontSize: '1.1em', marginBottom: 5 }}>{m.title}</div>
+              
+              {m.release_date && (
+                <div style={{ fontSize: '0.9em', color: '#666', marginBottom: 10 }}>
+                  RELEASE : {m.release_date}
+                </div>
+              )}
+
+              {m.overview && (
+                <p style={{ fontSize: '0.9em', color: '#333', marginTop: 0, marginBottom: 15 }}>
+                  {m.overview.substring(0, 150)}...
+                </p>
+              )}
+
+              <DiaryEntryForm user={auth.currentUser} movie={m} />
+            </div>
           </div>
         ))}
 
@@ -82,7 +127,7 @@ export default function App() {
   
   const navButtonStyle = (target) => ({
     padding: "8px 12px",
-    background: page === target ? "darkblue" : "black",
+    background: page === target ? "rgb(162, 23, 23)" : "black",
     color: "white",
     border: "none",
     borderRadius: 4,
@@ -90,12 +135,21 @@ export default function App() {
     marginLeft: 8,
   });
 
+  const logoStyle = {
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: 40,
+    marginBottom: 0,
+    color: 'rgb(162, 23, 23)',
+    letterSpacing: 3,
+    fontWeight: 900,
+  };
+  
 
   return (
     <AuthGate>
       <div style={{ padding: 20, maxWidth: 600, margin: "0 auto" }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h1>Movie Diary</h1>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 10, borderBottom: '1px solid #eee' }}>
+            <h1 style={logoStyle}>Cinemma</h1>
             <div>
                 <button 
                     style={navButtonStyle("home")}
