@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { addDoc, collection, query, where, getDocs } from "firebase/firestore";
-import { db, serverTimestamp } from "../firebase";
+import { db, serverTimestamp, allowRewatches} from "../firebase";
 
 export default function DiaryEntryForm({ user, movie }) {
   const [notes, setNotes] = useState("");
 
   async function save() {
     const ref = collection(db, "users", user.uid, "diary");
-    const allowRewatches = false; // User setting: change to true to allow rewatches
     // if movie already exists and rewatches not allowed, alert user and return
 
     const q = query(ref, where("movieId", "==", movie.id));

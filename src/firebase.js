@@ -14,6 +14,11 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const auth = typeof window !== "undefined" ? getAuth(app) : null;
+export const allowRewatches = false;
+// export const allowRewatches = () => {
+//   const allowRewatchesSetting = localStorage.getItem("allowRewatches");
+//   return allowRewatchesSetting === "true";
+// };
 export const provider = new GoogleAuthProvider();
 export const db = getFirestore(app);
 export { serverTimestamp };

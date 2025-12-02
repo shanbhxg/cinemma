@@ -1,3 +1,4 @@
+// App.jsx
 import { useState } from "react";
 import AuthGate from "./components/AuthGate";
 import { searchMovies, posterUrl } from "./api/tmdb";
@@ -7,12 +8,19 @@ import Home from "./pages/Home";
 
 export default function App() {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState([]); 
 
   async function search() {
     const r = await searchMovies(query);
     setResults(r.results || []);
   }
+
+  function goBack() {
+    setQuery("");
+    setResults([]);
+  }
+
+  const isSearching = results.length > 0;
 
   return (
     <AuthGate>
@@ -26,12 +34,22 @@ export default function App() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
-          <button
-            style={{ padding: "10px 14px", background: "black", color: "white" }}
-            onClick={search}
-          >
-            Go
-          </button>
+          
+          {isSearching ? (
+            <button
+              style={{ padding: "10px 14px", background: "blue", color: "white" }}
+              onClick={goBack} 
+            >
+              Back
+            </button>
+          ) : (
+            <button
+              style={{ padding: "10px 14px", background: "black", color: "white" }}
+              onClick={search}
+            >
+              Go
+            </button>
+          )}
         </div>
 
         {results.map((m) => (
@@ -53,8 +71,8 @@ export default function App() {
             <DiaryEntryForm user={auth.currentUser} movie={m} />
           </div>
         ))}
-
-        <Home />
+        
+        {!isSearching && <Home />}
       </div>
     </AuthGate>
   );
