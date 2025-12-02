@@ -105,7 +105,7 @@ export default function App() {
               
               {m.release_date && (
                 <div style={{ fontSize: '0.9em', color: '#666', marginBottom: 10 }}>
-                  RELEASE : {m.release_date}
+                  {m.release_date}
                 </div>
               )}
 
