@@ -64,7 +64,7 @@ export default function App() {
             <button
               style={{ 
                 padding: "10px 14px", 
-                background: "gray", 
+                background: "black", 
                 color: "white", 
                 borderRadius: 4,
                 border: 'none',
@@ -133,6 +133,8 @@ export default function App() {
     borderRadius: 4,
     cursor: "pointer",
     marginLeft: 8,
+    borderBottom: page === target ? "3px solid black" : "none",
+    paddingBottom: "9px",
   });
 
   const logoStyle = {
@@ -155,13 +157,13 @@ export default function App() {
                     style={navButtonStyle("home")}
                     onClick={() => setPage("home")}
                 >
-                    Diary
+                   📝
                 </button>
                 <button 
                     style={navButtonStyle("settings")}
                     onClick={() => setPage("settings")}
                 >
-                    Settings
+                    ⚙️
                 </button>
             </div>
         </div>

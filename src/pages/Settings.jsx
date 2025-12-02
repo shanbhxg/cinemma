@@ -44,17 +44,32 @@ const toggleSwitchStyle = `
 }
 
 input:checked + .slider {
-  background-color: #b4dd13;
+  background-color: #2196F3;
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #b4dd13;
+  box-shadow: 0 0 1px #2196F3;
 }
 
 input:checked + .slider:before {
   -webkit-transform: translateX(26px);
   -ms-transform: translateX(26px);
   transform: translateX(26px);
+}
+
+@media (max-width: 600px) {
+  .user-info-container {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+  .user-info-table {
+    width: 100% !important;
+    margin-bottom: 10px;
+  }
+  .logout-button {
+    width: 100%;
+    margin-top: 10px;
+  }
 }
 `;
 
@@ -102,12 +117,21 @@ export default function Settings() {
     }
 
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 15, marginTop: "10px", border: "1px solid #ddd", borderRadius: 6, background: "#f9f9f9" }}>
-        <table style={{ borderCollapse: 'collapse', width: '70%' }}>
+      <div className="user-info-container" style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: 15,
+        marginTop: "10px",
+        border: "1px solid #ddd",
+        borderRadius: 6,
+        background: "#f9f9f9"
+      }}>
+        <table className="user-info-table" style={{ borderCollapse: 'collapse', width: '70%', tableLayout: 'fixed' }}>
           <tbody>
             <tr>
-              <td style={{ padding: '5px 0', fontWeight: 500, color: "#555", width: '150px' }}>Logged in as:</td>
-              <td style={{ padding: '5px 0', fontWeight: 600, color: "#333" }}>{user.email || "N/A"}</td>
+              <td style={{ padding: '5px 0', fontWeight: 500, color: "#555", width: '120px' }}>Logged in as:</td>
+              <td style={{ padding: '5px 0', fontWeight: 600, color: "#333", overflowWrap: 'break-word' }}>{user.email || "N/A"}</td>
             </tr>
             <tr>
               <td style={{ padding: '5px 0', fontWeight: 500, color: "#555" }}>Login Method:</td>
@@ -117,6 +141,7 @@ export default function Settings() {
         </table>
         <button
           onClick={handleLogout}
+          className="logout-button"
           style={{
             padding: "8px 14px",
             background: "#d9534f",
