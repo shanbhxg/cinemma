@@ -5,10 +5,12 @@ import { searchMovies, posterUrl } from "./api/tmdb";
 import { auth } from "./firebase";
 import DiaryEntryForm from "./components/DiaryEntryForm";
 import Home from "./pages/Home";
+import Settings from "./pages/Settings"; 
 
 export default function App() {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState([]); 
+  const [results, setResults] = useState([]);
+  const [page, setPage] = useState("home"); 
 
   async function search() {
     const r = await searchMovies(query);
@@ -22,11 +24,13 @@ export default function App() {
 
   const isSearching = results.length > 0;
 
-  return (
-    <AuthGate>
-      <div style={{ padding: 20, maxWidth: 600, margin: "0 auto" }}>
-        <h1>Movie Diary</h1>
+  const renderContent = () => {
+    if (page === "settings") {
+      return <Settings />;
+    }
 
+    return (
+      <>
         <div style={{ display: "flex", gap: 8, marginTop: 20 }}>
           <input
             style={{ flex: 1, padding: 10 }}
@@ -37,8 +41,8 @@ export default function App() {
           
           {isSearching ? (
             <button
-              style={{ padding: "10px 14px", background: "blue", color: "white" }}
-              onClick={goBack} 
+              style={{ padding: "10px 14px", background: "gray", color: "white" }}
+              onClick={goBack}
             >
               Back
             </button>
@@ -67,12 +71,49 @@ export default function App() {
               style={{ width: 90, borderRadius: 4 }}
             />
             <div style={{ fontWeight: 600, marginTop: 8 }}>{m.title}</div>
-
             <DiaryEntryForm user={auth.currentUser} movie={m} />
           </div>
         ))}
-        
+
         {!isSearching && <Home />}
+      </>
+    );
+  };
+  
+  const navButtonStyle = (target) => ({
+    padding: "8px 12px",
+    background: page === target ? "darkblue" : "black",
+    color: "white",
+    border: "none",
+    borderRadius: 4,
+    cursor: "pointer",
+    marginLeft: 8,
+  });
+
+
+  return (
+    <AuthGate>
+      <div style={{ padding: 20, maxWidth: 600, margin: "0 auto" }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h1>Movie Diary</h1>
+            <div>
+                <button 
+                    style={navButtonStyle("home")}
+                    onClick={() => setPage("home")}
+                >
+                    Diary
+                </button>
+                <button 
+                    style={navButtonStyle("settings")}
+                    onClick={() => setPage("settings")}
+                >
+                    Settings
+                </button>
+            </div>
+        </div>
+
+        {renderContent()}
+
       </div>
     </AuthGate>
   );

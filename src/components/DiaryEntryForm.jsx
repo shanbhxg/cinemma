@@ -12,22 +12,24 @@ export default function DiaryEntryForm({ user, movie }) {
     const q = query(ref, where("movieId", "==", movie.id));
     const querySnapshot = await getDocs(q);
 
-    if (!querySnapshot.empty && !allowRewatches) {
-      const existingEntry = querySnapshot.docs[0].data();
-      const timestamp = existingEntry.createdAt;
+    if (!allowRewatches()) {
+      if (!querySnapshot.empty) {
+        const existingEntry = querySnapshot.docs[0].data();
+        const timestamp = existingEntry.createdAt;
 
-      let watchedDate = "an unknown date";
-      
-      if (timestamp && timestamp.toDate) {
-        watchedDate = timestamp.toDate().toLocaleDateString(undefined, {
-          day: '2-digit',
-          month: 'long',
-          year: 'numeric'
-        });
+        let watchedDate = "an unknown date";
+        
+        if (timestamp && timestamp.toDate) {
+          watchedDate = timestamp.toDate().toLocaleDateString(undefined, {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
+          });
+        }
+        alert(`This movie is already in your diary! You first watched it on ${watchedDate}. Your settings are set to not allow rewatches.`);
+        setNotes(""); 
+        return;
       }
-      alert(`This movie is already in your diary! You first watched it on ${watchedDate}. Your settings are set to not allow rewatches.`);
-      setNotes(""); 
-      return;
     }
 
     await addDoc(ref, {
