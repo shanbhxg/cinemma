@@ -1,4 +1,3 @@
-// src/pages/Home.jsx
 import { useEffect, useState } from "react";
 import { auth, db } from "../firebase";
 import { collection, onSnapshot, orderBy, query, deleteDoc, doc } from "firebase/firestore";
@@ -15,7 +14,7 @@ export default function Home() {
     try {
       const uid = auth.currentUser.uid;
       const docRef = doc(db, "users", uid, "diary", entryId);
-      
+
       await deleteDoc(docRef);
       console.log("Document successfully deleted with ID:", entryId);
     } catch (error) {
@@ -25,7 +24,7 @@ export default function Home() {
   }
 
   useEffect(() => {
-    if (!auth.currentUser) return; 
+    if (!auth.currentUser) return;
 
     const uid = auth.currentUser.uid;
     const ref = collection(db, "users", uid, "diary");
@@ -34,6 +33,28 @@ export default function Home() {
       setEntries(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
     });
   }, []);
+
+  if (entries.length === 0) {
+    return (
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '40vh',
+        textAlign: 'center',
+        padding: 20
+      }}>
+        <p style={{
+          fontSize: '1.2rem',
+          color: '#666',
+          fontStyle: 'italic'
+        }}>
+          Your diary is empty. Find a movie and log your first entry!
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: 20 }}>
@@ -50,7 +71,7 @@ export default function Home() {
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-             <img
+            <img
               src={posterUrl(e.posterPath)}
               style={{ width: 80, borderRadius: 4 }}
             />
@@ -69,11 +90,11 @@ export default function Home() {
               Delete
             </button>
           </div>
-          
+
           <div style={{ fontWeight: 600, marginTop: 8 }}>{e.title}</div>
           <div style={{ fontSize: 12, color: '#666' }}>
             Watched on: {e.createdAt?.toDate().toLocaleDateString() || 'N/A'}
-          </div> 
+          </div>
           <div style={{ marginTop: 4 }}>{e.notes}</div>
         </div>
       ))}
