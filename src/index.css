@@ -1,0 +1,139 @@
+/* ==== RESET ==== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ==== BASE ==== */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+  background: #f7f7f8;
+  color: #111;
+  padding-bottom: 80px;
+}
+
+h1, h2 {
+  font-weight: 600;
+}
+
+input, textarea, button {
+  font-family: inherit;
+  font-size: 16px;
+}
+
+/* ==== LAYOUT ==== */
+.container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* ==== INPUTS ==== */
+.input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #dcdcdc;
+  border-radius: 10px;
+  background: white;
+  transition: 0.15s border;
+}
+
+.input:focus {
+  border-color: #111;
+  outline: none;
+}
+
+/* ==== BUTTON ==== */
+.btn {
+  padding: 12px 16px;
+  border: none;
+  border-radius: 10px;
+  background: #111;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.15s opacity;
+}
+
+.btn:active {
+  opacity: 0.7;
+}
+
+/* ==== MOVIE CARD ==== */
+.movie-card {
+  margin-top: 18px;
+  padding: 16px;
+  background: white;
+  border-radius: 14px;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+}
+
+.movie-poster {
+  width: 90px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.movie-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+/* ==== DIARY ENTRY ==== */
+.diary-card {
+  margin-top: 18px;
+  padding: 16px;
+  background: white;
+  border-radius: 14px;
+  border: 1px solid #ddd;
+}
+
+.diary-textarea {
+  width: 100%;
+  background: #fafafa;
+  padding: 12px;
+  border: 1px solid #dcdcdc;
+  border-radius: 10px;
+  resize: none;
+  min-height: 70px;
+  transition: 0.15s border;
+}
+
+.diary-textarea:focus {
+  border-color: #111;
+  outline: none;
+}
+
+/* ==== DIARY LIST ==== */
+.entry {
+  margin-top: 18px;
+  padding: 16px;
+  background: white;
+  border-radius: 14px;
+  border: 1px solid #ddd;
+}
+
+/* ==== IMAGE LIST ==== */
+.entry-poster {
+  width: 80px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+/* ==== SPACING UTILS ==== */
+.mt-20 { margin-top: 20px; }
+.mt-12 { margin-top: 12px; }
+.mt-8  { margin-top: 8px; }
+
+/* ==== NICE ANIMATIONS ==== */
+.fade {
+  animation: fadeIn 0.4s ease both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
