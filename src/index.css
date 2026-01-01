@@ -380,6 +380,24 @@ textarea:focus {
   margin-bottom: 18px;
 }
 
+.highlight {
+  color: var(--red);
+  font-weight: 600;
+  background-color: rgba(255, 49, 49, 0.1);
+  padding: 3px 10px;
+  border-radius: 4px;
+}
+
+.coming-soon-banner {
+  color: var(--mid-grey);
+  font-style: italic;
+  font-size: 14px;
+  margin-top: 6px;
+  background: var(--light-grey);
+  padding: 5px 10px;
+  border-radius: 6px;
+}
+
 .month-label {
   /* badge and capitalized */
   display: inline-block;
@@ -673,7 +691,7 @@ textarea:focus {
 }
 
 .section {
-  margin-bottom: 20px;
+  margin-top: 30px;
 }
 
 .setting-row {
@@ -683,6 +701,30 @@ textarea:focus {
   padding: 15px;
   border: 1px solid #ccc;
   border-radius: 6px;
+}
+
+.letterboxd-link {
+  color: var(--red);
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.letterboxd-upload {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  background: var(--black);
+  color: var(--white);
+  margin-top: 10px;
+  font-size: 14px;
+  input {
+    display: none;
+  }
 }
 
 .setting-label {
@@ -700,6 +742,7 @@ textarea:focus {
   justify-content: space-between;
   align-items: center;
   padding: 15px;
+  margin-top: 20px;
   border: 1px solid #ddd;
   border-radius: 6px;
   background: #f9f9f9;

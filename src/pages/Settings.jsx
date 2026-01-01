@@ -269,7 +269,6 @@ export default function Settings() {
           <span className="slider"></span>
         </label>
       </div>
-
       <p className="helper-text">When set to 'No', you cannot add a movie to your diary if it already exists.</p>
 
       <div className="section setting-row">
@@ -279,27 +278,19 @@ export default function Settings() {
           <span className="slider"></span>
         </label>
       </div>
-
       <p className="helper-text">When enabled, watched dates show your most recent rewatch instead of your first watch.</p>
 
       <div className="section">
         <h3>Letterboxd Connection</h3>
-        <p className="helper-text">Export your data from Letterboxd (Settings → Data). Then upload the CSV here to import reviews and watched dates.</p>
-
-        <div className="letterboxd-actions" style={{ display: 'flex', gap: 12, marginTop: 10 }}>
-          <button
-            className="btn btn-secondary"
-            onClick={() => window.open("https://letterboxd.com/settings/data/", "_blank", "noopener,noreferrer")}
-          >
-            Open Letterboxd Export
-          </button>
-
-          <label className="file-upload file-upload-letterboxd" style={{ position: 'relative', overflow: 'hidden', display: 'inline-block', padding: '10px 14px', borderRadius: 6, background: '#f3f3f3', border: '1px solid #ccc', cursor: 'pointer', fontWeight: 500 }}>
+        <div className="letterboxd-actions" style={{ display: 'flex', gap: 12, marginTop: 10 }}> 
+        <p className="helper-text">Export your data from <a className="letterboxd-link" href="https://letterboxd.com/settings/data/" target="_blank" rel="noopener noreferrer">Letterboxd (Settings → Data)</a>. Then upload the <span className="highlight"> diary.csv </span> only, after unzipping the file.</p>
+          
+        </div>
+        <label className="letterboxd-upload">
             Import Letterboxd CSV
             <input
               type="file"
               accept=".csv"
-              style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }}
               onChange={(e) => {
                 if (e.target.files?.[0]) {
                   importFromLetterboxdCSV(e.target.files[0], user);
@@ -308,7 +299,9 @@ export default function Settings() {
               }}
             />
           </label>
-        </div>
+          <div className="coming-soon-banner">
+            <strong>Coming Soon:</strong> Direct Letterboxd sync and more import options!
+          </div>
       </div>
 
       <div className="diary-data">
