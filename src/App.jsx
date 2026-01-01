@@ -14,42 +14,60 @@ export default function App() {
   const [page, setPage] = useState("home"); 
 
   useEffect(() => {
-    if (!auth.currentUser) return;
+    if (!auth || !auth.currentUser) return;
+  
+    let cancelled = false;
   
     async function loadDiary() {
-      const ref = collection(db, "users", auth.currentUser.uid, "diary");
-      const snap = await getDocs(ref);
-    
-      const temp = {};
-    
-      snap.forEach(doc => {
-        const d = doc.data();
-        if (!d.movieId || !d.createdAt?.toDate) return;
-    
-        const date = d.createdAt.toDate();
-    
-        if (!temp[d.movieId]) {
-          temp[d.movieId] = [];
+      try {
+        const ref = collection(db, "users", auth.currentUser.uid, "diary");
+        const snap = await getDocs(ref);
+        const temp = {};
+  
+        snap.forEach(doc => {
+          const d = doc.data();
+          if (!d?.movieId || !d?.createdAt) return;
+  
+          let date;
+          const ts = d.createdAt;
+          if (ts?.toDate && typeof ts.toDate === "function") {
+            date = ts.toDate();
+          } else if (ts instanceof Date) {
+            date = ts;
+          } else {
+            date = new Date(ts);
+          }
+          if (isNaN(date)) return;
+  
+          const key = String(d.movieId);
+          if (!temp[key]) temp[key] = [];
+          temp[key].push(date);
+        });
+  
+        const mode = localStorage.getItem("watchDateMode") || "first";
+  
+        const map = {};
+        Object.entries(temp).forEach(([movieId, dates]) => {
+          const times = dates.map(dt => +dt); 
+          const chosen = mode === "latest" ? Math.max(...times) : Math.min(...times);
+          map[movieId] = new Date(chosen);
+        });
+  
+        if (!cancelled) {
+          setWatchedMap(map);
         }
-        temp[d.movieId].push(date);
-      });
-    
-      const mode = localStorage.getItem("watchDateMode") || "first";
-      const map = {};
-    
-      Object.entries(temp).forEach(([movieId, dates]) => {
-        map[movieId] =
-          mode === "latest"
-            ? new Date(Math.max(...dates))
-            : new Date(Math.min(...dates));
-      });
-    
-      setWatchedMap(map);
+      } catch (err) {
+        console.error("Error loading diary for watchedMap", err);
+      }
     }
-    
   
     loadDiary();
-  }, []);  
+  
+    return () => {
+      cancelled = true;
+    };
+  }, [auth?.currentUser]);
+   
 
   async function search() {
     if (query.trim()) {
