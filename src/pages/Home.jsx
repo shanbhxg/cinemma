@@ -1,15 +1,13 @@
 import { useEffect, useState } from "react";
 import { auth, db } from "../firebase";
 import { collection, onSnapshot, orderBy, query, deleteDoc, doc } from "firebase/firestore";
-import { posterUrl } from "../api/tmdb"; 
+import { posterUrl } from "../api/tmdb";
 
-const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY; 
-
+const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const TMDB_BASE_URL = "https://api.themoviedb.org/3/movie";
 
 async function fetchMovieDetails(movieId) {
   if (!TMDB_API_KEY || !movieId) {
-    console.warn("Missing TMDb API Key or Movie ID.");
     return { director: null, release_date: null };
   }
 
@@ -18,22 +16,21 @@ async function fetchMovieDetails(movieId) {
       `${TMDB_BASE_URL}/${movieId}/credits?api_key=${TMDB_API_KEY}`
     );
     const creditsData = await creditsRes.json();
-    
-    const director = creditsData.crew.find(
-      (member) => member.job === "Director"
-    )?.name || 'N/A';
+
+    const director =
+      creditsData.crew.find((m) => m.job === "Director")?.name ?? "N/A";
+
     const detailsRes = await fetch(
       `${TMDB_BASE_URL}/${movieId}?api_key=${TMDB_API_KEY}`
     );
     const detailsData = await detailsRes.json();
-    
-    const release_date = detailsData.release_date || 'N/A';
 
-    return { director, release_date };
-
-  } catch (error) {
-    console.error("Error fetching movie details from TMDb:", error);
-    return { director: 'Error', release_date: 'Error' };
+    return {
+      director,
+      release_date: detailsData.release_date ?? "N/A",
+    };
+  } catch {
+    return { director: "Error", release_date: "Error" };
   }
 }
 
@@ -45,140 +42,89 @@ export default function Home() {
       return;
     }
 
-    try {
-      const uid = auth.currentUser.uid;
-      const docRef = doc(db, "users", uid, "diary", entryId);
-
-      await deleteDoc(docRef);
-      console.log("Document successfully deleted with ID:", entryId);
-    } catch (error) {
-      console.error("Error deleting document: ", error);
-      alert("Failed to delete entry. Check console for details.");
-    }
+    const uid = auth.currentUser.uid;
+    await deleteDoc(doc(db, "users", uid, "diary", entryId));
   }
 
   useEffect(() => {
     if (!auth.currentUser) return;
 
-    const uid = auth.currentUser.uid;
-    const ref = collection(db, "users", uid, "diary");
+    const ref = collection(db, "users", auth.currentUser.uid, "diary");
     const q = query(ref, orderBy("createdAt", "desc"));
 
-    const unsubscribe = onSnapshot(q, async (snap) => {
-      const fetchedEntries = snap.docs.map((d) => ({ 
-        id: d.id, 
-        ...d.data(), 
-        director: 'Loading...', 
-        release_date: 'Loading...',
+    const unsub = onSnapshot(q, async (snap) => {
+      const base = snap.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
+        director: "Loading...",
+        release_date: "Loading...",
       }));
-      
-      setEntries(fetchedEntries);
-      const updatedEntries = await Promise.all(
-        fetchedEntries.map(async (entry) => {
-          const { director, release_date } = await fetchMovieDetails(entry.movieId); 
-          return { ...entry, director, release_date };
-        })
+
+      setEntries(base);
+
+      const enriched = await Promise.all(
+        base.map(async (e) => ({
+          ...e,
+          ...(await fetchMovieDetails(e.movieId)),
+        }))
       );
-      
-      setEntries(updatedEntries);
+
+      setEntries(enriched);
     });
 
-    return () => unsubscribe();
-  }, []); 
+    return () => unsub();
+  }, []);
 
-  if (entries.length === 0) {
+  if (!entries.length) {
     return (
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '40vh',
-        textAlign: 'center',
-        padding: 20
-      }}>
-        <p style={{
-          fontSize: '1.2rem',
-          color: '#666',
-          fontStyle: 'italic'
-        }}>
-          Your diary is empty. Find a movie and log your first entry!
-        </p>
+      <div className="empty-state">
+        <p>Your diary is empty. Find a movie and log your first entry!</p>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: 20 }}>
+    <div className="home">
       <h2>Your Diary</h2>
 
       {entries.map((e) => (
-        <div
-          key={e.id}
-          style={{
-            marginTop: 15,
-            padding: 12,
-            border: "1px solid #ccc",
-            borderRadius: 6,
-            backgroundColor: '#f9f9f9', 
-            boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 }}>
+        <div key={e.id} className="entry-card">
+          <div className="entry-top">
             <img
               src={posterUrl(e.posterPath)}
               alt={e.title}
-              style={{ width: 80, height: 120, objectFit: 'cover', borderRadius: 4 }}
+              className="entry-poster"
             />
-            
-            <div style={{ flexGrow: 1, minWidth: 0 }}>
-              <div style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: 4 }}>{e.title}</div>
-              
-              <div style={{ fontSize: 12,  color: 'rgba(55, 55, 55, 0.8)' }}>
-                <p style={{ margin: 0 }}>
-                  {e.director}
-                </p>
-                <p style={{ margin: '2px 0 0 0' }}>
-                   {e.release_date}
-                </p>
+
+            <div className="entry-main">
+              <div className="entry-title">{e.title}</div>
+
+              <div className="entry-meta">
+                <p>{e.director}</p>
+                <p>{e.release_date}</p>
               </div>
             </div>
-            
+
             <button
+              className="entry-delete"
               onClick={() => deleteEntry(e.id)}
-              style={{
-                background: "#c0392b", 
-                color: "white",
-                border: "none",
-                padding: "6px 10px",
-                borderRadius: 4,
-                cursor: "pointer",
-                fontSize: 12,
-                alignSelf: 'flex-start', 
-                fontWeight: 600
-              }}
             >
               Delete
             </button>
           </div>
 
-          <div style={{ 
-              marginTop: 12, 
-              paddingTop: 10, 
-              borderTop: '1px dashed #ddd', 
-              fontSize: '0.95rem',
-              lineHeight: 1.4,
-              color: '#333'
-            }}>
-                <p style={{ margin: '4px 0 0 0' }}>
-                    <strong style={{ color: '#000' }}>Watched on:</strong> {e.createdAt?.toDate().toLocaleDateString() || 'N/A'}
-                </p>
-                {e.notes && (
-                  <>
-                    <strong style={{ display: 'block', marginBottom: 4, color: '#000', marginTop: 8 }}>Your Notes:</strong>
-                    <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{e.notes}</p>
-                  </>
-                )}
+          <div className="entry-notes">
+            <p>
+              <strong>Watched on:</strong>{" "}
+              {e.createdAt?.toDate().toLocaleDateString() || "N/A"}
+            </p>
+
+            {e.notes && (
+              <>
+                <strong>Your Notes:</strong>
+                <p className="entry-note-text">{e.notes}</p>
+              </>
+            )}
           </div>
         </div>
       ))}

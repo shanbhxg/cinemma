@@ -5,186 +5,281 @@
   box-sizing: border-box;
 }
 
+/* ==== COLOR TOKENS ==== */
+:root {
+  --black: #000000;
+  --dark-grey: #2b2b2b;
+  --mid-grey: #666666;
+  --light-grey: #e5e5e5;
+  --bg-grey: #f4f4f4;
+  --white: #ffffff;
+
+  --red: #ff3131;
+  --yellow: #ffbd59;
+}
+
 /* ==== BASE ==== */
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
-  background: #f7f7f8;
-  color: #111;
+  background: var(--bg-grey);
+  color: var(--dark-grey);
   padding-bottom: 80px;
 }
 
-h1, h2 {
+h1, h2, h3 {
   font-weight: 600;
+  color: var(--black);
 }
 
 input, textarea, button {
   font-family: inherit;
   font-size: 16px;
+  color: var(--black);
 }
 
 /* ==== LAYOUT ==== */
 .container {
-  max-width: 500px;
+  max-width: 600px;
   margin: 0 auto;
   padding: 20px;
 }
 
-/* ==== INPUTS ==== */
-.input {
-  width: 100%;
-  padding: 12px 14px;
-  border: 1px solid #dcdcdc;
-  border-radius: 10px;
-  background: white;
-  transition: 0.15s border;
+/* ==== APP HEADER ==== */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--light-grey);
 }
 
-.input:focus {
-  border-color: #111;
+.app-header-image {
+  height: 52px;
+  width: auto;
+  object-fit: contain;
+}
+
+.app-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.nav-btn {
+  padding: 8px 12px;
+  background: var(--black);
+  color: var(--white);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.nav-btn.active {
+  background: var(--red);
+}
+
+/* ==== SEARCH ==== */
+.search-bar {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+/* ==== INPUTS ==== */
+.input,
+textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--light-grey);
+  border-radius: 10px;
+  background: var(--white);
+}
+
+.input:focus,
+textarea:focus {
+  border-color: var(--black);
   outline: none;
 }
 
-/* ==== BUTTON ==== */
+/* ==== BUTTONS ==== */
 .btn {
   padding: 12px 16px;
   border: none;
   border-radius: 10px;
-  background: #111;
-  color: white;
+  background: var(--black);
+  color: var(--white);
   font-weight: 500;
   cursor: pointer;
-  transition: 0.15s opacity;
 }
 
 .btn:active {
-  opacity: 0.7;
+  opacity: 0.75;
 }
 
-/* ==== MOVIE CARD ==== */
-.movie-card {
-  margin-top: 18px;
-  padding: 16px;
-  background: white;
-  border-radius: 14px;
-  border: 1px solid #ddd;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
-}
-
-.movie-poster {
-  width: 90px;
-  border-radius: 10px;
-  object-fit: cover;
-}
-
-.movie-title {
-  font-size: 18px;
-  font-weight: 600;
-  margin-top: 8px;
-}
-
-/* ==== DIARY ENTRY ==== */
-.diary-card {
-  margin-top: 18px;
-  padding: 16px;
-  background: white;
-  border-radius: 14px;
-  border: 1px solid #ddd;
-}
-
-.diary-textarea {
-  width: 100%;
-  background: #fafafa;
-  padding: 12px;
-  border: 1px solid #dcdcdc;
-  border-radius: 10px;
-  resize: none;
-  min-height: 70px;
-  transition: 0.15s border;
-}
-
-.diary-textarea:focus {
-  border-color: #111;
-  outline: none;
-}
-
-/* ==== DIARY LIST ==== */
-.entry {
-  margin-top: 18px;
-  padding: 16px;
-  background: white;
-  border-radius: 14px;
-  border: 1px solid #ddd;
-}
-
-/* ==== IMAGE LIST ==== */
-.entry-poster {
-  width: 80px;
-  border-radius: 10px;
-  margin-bottom: 10px;
-}
-
-/* ==== SPACING UTILS ==== */
-.mt-20 { margin-top: 20px; }
-.mt-12 { margin-top: 12px; }
-.mt-8  { margin-top: 8px; }
-
-/* ==== NICE ANIMATIONS ==== */
-.fade {
-  animation: fadeIn 0.4s ease both;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ==== DIARY DATA ==== */
-.diary-data {
-  margin-top: 30px;
-  padding: 15px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-}
-
-
-.diary-header {
-  display: flex;
-  align-items: center;          /* vertical centering */
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.diary-header h3 {
-  margin: 0;                    /* important for alignment */
-}
-
-.diary-actions {
-  display: flex;
-  gap: 12px;
-}
-
-/* secondary button */
 .btn-secondary {
-  background: #111;
-  color: #fff;
+  background: var(--black);
+  color: var(--white);
   padding: 10px 14px;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
 }
 
-/* file upload styled like button */
+/* ==== HOME / DIARY LIST ==== */
+.home {
+  padding: 20px 0;
+}
+
+.empty-state {
+  min-height: 40vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--mid-grey);
+  font-style: italic;
+}
+
+.entry-card {
+  margin-top: 18px;
+  padding: 16px;
+  background: var(--white);
+  border-radius: 14px;
+  border: 1px solid var(--light-grey);
+}
+
+.entry-top {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.entry-poster {
+  width: 80px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.entry-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.entry-title {
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin-bottom: 4px;
+}
+
+.entry-meta {
+  font-size: 0.8rem;
+  color: var(--mid-grey);
+}
+
+.entry-meta p {
+  margin: 0;
+}
+
+.entry-delete {
+  background: var(--red);
+  color: var(--white);
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.entry-notes {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--light-grey);
+  font-size: 0.95rem;
+}
+
+.entry-note-text {
+  white-space: pre-wrap;
+}
+
+/* ==== AUTH / SIGN IN ==== */
+.auth-container {
+  padding: 30px;
+  max-width: 380px;
+  margin: 80px auto;
+  background: var(--white);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.auth-header-image {
+  height: 160px;
+  width: auto;
+  object-fit: contain;
+  margin-bottom: 20px;
+}
+
+.auth-form {
+  width: 100%;
+}
+
+.auth-form .input {
+  margin-bottom: 15px;
+}
+
+.auth-submit {
+  width: 100%;
+  color: green !important;
+}
+
+.auth-divider {
+  text-align: center;
+  margin: 12px 0;
+  color: var(--mid-grey);
+  font-weight: 500;
+}
+
+.auth-google {
+  width: 100%;
+  background: var(--red);
+}
+
+.auth-toggle {
+  margin-top: 22px;
+  font-size: 14px;
+  color: var(--mid-grey);
+  text-align: center;
+}
+
+.auth-toggle-btn {
+  background: none;
+  border: none;
+  color: var(--black);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.auth-error {
+  color: var(--red);
+  font-size: 13px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+/* ==== FILE UPLOAD ==== */
 .file-upload {
   position: relative;
   overflow: hidden;
   display: inline-block;
   padding: 10px 14px;
   border-radius: 8px;
-  background: #d9534f;
-  color: #fff;
+  background: var(--yellow);
+  color: var(--black);
   font-weight: 600;
   cursor: pointer;
-  border: 1px solid #ddd;
+  border: none;
 }
 
 .file-upload input {
@@ -192,4 +287,106 @@ input, textarea, button {
   inset: 0;
   opacity: 0;
   cursor: pointer;
+}
+
+/* ==== CARDS ==== */
+.movie-card,
+.diary-card,
+.entry,
+.diary-data {
+  margin-top: 18px;
+  padding: 16px;
+  background: var(--white);
+  border-radius: 14px;
+  border: 1px solid var(--light-grey);
+  display: flex;
+  gap: 15px;
+}
+
+/* ==== MOVIE ==== */
+.movie-poster {
+  width: 90px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.movie-content {
+  flex: 1;
+}
+
+.movie-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.movie-title {
+  font-weight: 600;
+  font-size: 1.1em;
+  color: var(--black);
+}
+
+.watched-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75em;
+  color: var(--mid-grey);
+}
+
+.movie-meta {
+  font-size: 0.9em;
+  color: var(--mid-grey);
+  margin-bottom: 10px;
+}
+
+.movie-overview {
+  font-size: 0.9em;
+  color: var(--dark-grey);
+  margin-bottom: 15px;
+}
+
+/* ==== DIARY ==== */
+.diary-textarea {
+  background: var(--bg-grey);
+  min-height: 70px;
+  resize: none;
+}
+
+.diary-textarea:focus {
+  border-color: var(--black);
+}
+
+/* ==== DIARY HEADER ROW ==== */
+.diary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.diary-header h3 {
+  margin: 0;
+}
+
+.diary-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* ==== SPACING UTILS ==== */
+.mt-20 { margin-top: 20px; }
+.mt-12 { margin-top: 12px; }
+.mt-8  { margin-top: 8px; }
+
+/* ==== ANIMATIONS ==== */
+.fade {
+  animation: fadeIn 0.35s ease both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
