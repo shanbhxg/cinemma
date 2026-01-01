@@ -70,7 +70,7 @@ export default function App() {
       <div className="container">
         <div className="app-header">
           <img
-            src="/src/assets/header.png"
+            src="/header.png"
             alt="Cinemma"
             className="app-header-image"
           />

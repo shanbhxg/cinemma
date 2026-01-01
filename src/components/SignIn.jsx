@@ -34,7 +34,7 @@ export default function SignIn() {
   return (
     <div className="auth-container">
       <img
-        src="/src/assets/header.png"
+        src="/header.png"
         alt="Cinemma"
         className="auth-header-image"
       />
