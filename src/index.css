@@ -353,14 +353,44 @@ textarea:focus {
 }
 
 /* ==== MONTH LIBRARY VIEW ==== */
+.year-switcher {
+  display: flex;
+  gap: 6px;
+  margin: 12px 0 20px;
+  flex-wrap: wrap;
+}
+
+.year-switcher button {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #ddd;
+  background: #fafafa;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.year-switcher button.active {
+  background: #111;
+  color: white;
+  border-color: #111;
+}
+
+
 .month-shelf {
   margin-bottom: 18px;
 }
 
 .month-label {
+  /* badge and capitalized */
+  display: inline-block;
+  background: var(--red);
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 12px;
   font-size: 12px;
-  color: #666;
-  margin-bottom: 6px;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 12px;
 }
 
 .poster-pair {
@@ -810,6 +840,10 @@ input:checked + .slider:before {
     justify-content: space-between;
   }
 }
+
+.month-two-col { display: flex; flex-direction: column; gap: 5px; }
+.month-row { display: grid; grid-template-columns: 1fr 1fr; gap: 100px; }
+.poster-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
 
 
 /* ==== SPACING UTILS ==== */
