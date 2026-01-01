@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
+import { collection, getDocs, addDoc } from "firebase/firestore";
 
 const SETTING_KEY = "allowRewatches";
 
@@ -72,6 +73,77 @@ input:checked + .slider:before {
   }
 }
 `;
+
+async function importDiaryFromCSV(file, user) {
+  const text = await file.text();
+  const lines = text.split(/\r?\n/).filter(Boolean);
+
+  const [header, ...rows] = lines;
+  const cols = header
+  .match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g)
+  .map(c => c.replace(/^"|"$/g, ""));
+
+  const ref = collection(db, "users", user.uid, "diary");
+
+  for (const row of rows) {
+    const values = row
+      .match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g)
+      .map(v => v.replace(/^"|"$/g, "").replace(/""/g, '"'));
+
+    const entry = Object.fromEntries(
+      cols.map((c, i) => [c, values[i]])
+    );
+
+    await addDoc(ref, {
+      movieId: Number(entry.movieId),
+      title: entry.title,
+      posterPath: entry.posterPath || null,
+      notes: entry.notes || "",
+      createdAt: entry.createdAt
+        ? new Date(entry.createdAt)
+        : new Date()
+    });
+  }
+}
+
+
+async function exportDiaryToCSV(user) {
+  const ref = collection(db, "users", user.uid, "diary");
+  const snap = await getDocs(ref);
+
+  const rows = [
+    ["movieId", "title", "posterPath", "notes", "createdAt"]
+  ];
+
+  snap.forEach(doc => {
+    const d = doc.data();
+    rows.push([
+      d.movieId,
+      d.title,
+      d.posterPath || "",
+      (d.notes || "").replace(/\n/g, " "),
+      d.createdAt?.toDate
+        ? d.createdAt.toDate().toISOString()
+        : ""
+    ]);
+  });
+
+  const csv = rows.map(r =>
+    r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")
+  ).join("\n");
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  const today = new Date().toISOString().slice(0, 10);
+  a.download = `cinemma-${today}.csv`;
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
+
 
 export default function Settings() {
   const [allowRewatches, setAllowRewatches] = useState(() => {
@@ -193,6 +265,34 @@ export default function Settings() {
       <p style={{ marginTop: 10, fontSize: 14, color: '#666' }}>
         When set to 'No', you cannot add a movie to your diary if it already exists.
       </p>
+
+      <div style={{
+  marginTop: 30,
+  padding: 15,
+  border: "1px solid #ccc",
+  borderRadius: 6
+}}>
+  <h3>Diary Data</h3>
+
+  <button
+    onClick={() => exportDiaryToCSV(user)}
+    style={{ marginRight: 10 }}
+  >
+    Export CSV
+  </button>
+
+  <input
+    type="file"
+    accept=".csv"
+    onChange={e => {
+      if (e.target.files?.[0]) {
+        importDiaryFromCSV(e.target.files[0], user);
+        e.target.value = "";
+      }
+    }}
+  />
+</div>
+
 
     </div>
   );
