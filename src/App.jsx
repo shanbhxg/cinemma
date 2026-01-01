@@ -6,6 +6,7 @@ import { db, auth } from "./firebase";
 import DiaryEntryForm from "./components/DiaryEntryForm";
 import Home from "./pages/Home";
 import Settings from "./pages/Settings"; 
+import Stats from "./pages/Stats";
 
 export default function App() {
   const [query, setQuery] = useState("");
@@ -83,6 +84,12 @@ export default function App() {
               <i class="fa-solid fa-ticket"></i>
             </button>
             <button
+              className={page === "stats" ? "nav-btn active" : "nav-btn"}
+              onClick={() => setPage("stats")}
+            >
+              <i class="fa-solid fa-chart-simple"></i>
+            </button>
+            <button
               className={page === "settings" ? "nav-btn active" : "nav-btn"}
               onClick={() => setPage("settings")}
             >
@@ -93,6 +100,8 @@ export default function App() {
 
         {page === "settings" ? (
           <Settings />
+        ) : page === "stats" ? (
+          <Stats />
         ) : (
           <>
             <div className="search-bar">
