@@ -11,10 +11,23 @@ export default function SignIn() {
   const [password, setPassword] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
   const [error, setError] = useState(null);
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   async function handleAuth(e) {
     e.preventDefault();
     setError(null);
+  
+    if (isRegistering) {
+      if (password.length < 6) {
+        setError("Password must be at least 6 characters.");
+        return;
+      }
+      if (password !== confirmPassword) {
+        setError("Passwords do not match.");
+        return;
+      }
+    }
+  
     try {
       if (isRegistering) {
         await createUserWithEmailAndPassword(auth, email, password);
@@ -25,6 +38,7 @@ export default function SignIn() {
       setError(err.message);
     }
   }
+  
 
   function handleGoogleSignIn() {
     setError(null);
@@ -38,7 +52,7 @@ export default function SignIn() {
         alt="Cinemma"
         className="auth-header-image"
       />
-
+      {error && <p className="auth-error">{error}</p>}
       <form className="auth-form" onSubmit={handleAuth}>
         <input
           className="input"
@@ -58,8 +72,16 @@ export default function SignIn() {
           required
         />
 
-        {error && <p className="auth-error">{error}</p>}
-
+        {isRegistering && (
+          <input
+            className="input"
+            type="password"
+            placeholder="Confirm password"
+            value={confirmPassword}
+            onChange={e => setConfirmPassword(e.target.value)}
+            required
+          />
+        )}
         <button className="btn auth-primary" type="submit">
           {isRegistering ? "Register" : "Sign In"}
         </button>

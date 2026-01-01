@@ -231,7 +231,12 @@ textarea:focus {
 
 .auth-submit {
   width: 100%;
-  color: green !important;
+}
+
+.auth-primary {
+  width: 100%;
+  margin: 0 auto;
+  display: block;
 }
 
 .auth-divider {
@@ -262,9 +267,13 @@ textarea:focus {
 }
 
 .auth-error {
+  background: #ffdddd;
   color: var(--red);
-  font-size: 13px;
-  margin-bottom: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  font-size: 0.9em;
+  width: 100%;
   text-align: center;
 }
 

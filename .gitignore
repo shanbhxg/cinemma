@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 firebase_creds
+package.json
 
 # Editor directories and files
 .vscode/*
