@@ -3,6 +3,7 @@ import { auth, db } from "../firebase";
 import { collection, getDocs, addDoc } from "firebase/firestore";
 
 const SETTING_KEY = "allowRewatches";
+const WATCH_DATE_MODE_KEY = "watchDateMode";
 
 const toggleSwitchStyle = `
 .toggle-switch {
@@ -151,6 +152,15 @@ export default function Settings() {
     return localStorage.getItem(SETTING_KEY) === "true";
   });
 
+  const [watchDateMode, setWatchDateMode] = useState(() => {
+    if (typeof window === "undefined") return "first";
+    return localStorage.getItem(WATCH_DATE_MODE_KEY) || "first";
+  });
+  
+  useEffect(() => {
+    localStorage.setItem(WATCH_DATE_MODE_KEY, watchDateMode);
+  }, [watchDateMode]);  
+
   const user = auth.currentUser;
 
   useEffect(() => {
@@ -160,6 +170,11 @@ export default function Settings() {
   const toggleRewatches = () => {
     setAllowRewatches(prev => !prev);
   };
+
+  const toggleWatchDateMode = () => {
+    setWatchDateMode(prev => (prev === "first" ? "latest" : "first"));
+  };
+  
 
   const handleLogout = async () => {
     try {
@@ -266,33 +281,63 @@ export default function Settings() {
         When set to 'No', you cannot add a movie to your diary if it already exists.
       </p>
 
-      <div style={{
-  marginTop: 30,
-  padding: 15,
-  border: "1px solid #ccc",
-  borderRadius: 6
-}}>
-  <h3>Diary Data</h3>
+      <div
+  style={{
+    marginTop: 20,
+    padding: 15,
+    border: "1px solid #ccc",
+    borderRadius: 6,
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center"
+  }}
+>
+  <label htmlFor="watch-date-toggle" style={{ fontWeight: 600 }}>
+    Show Most Recent Watch
+  </label>
 
-  <button
-    onClick={() => exportDiaryToCSV(user)}
-    style={{ marginRight: 10 }}
-  >
-    Export CSV
-  </button>
-
-  <input
-    type="file"
-    accept=".csv"
-    onChange={e => {
-      if (e.target.files?.[0]) {
-        importDiaryFromCSV(e.target.files[0], user);
-        e.target.value = "";
-      }
-    }}
-  />
+  <label className="toggle-switch">
+    <input
+      id="watch-date-toggle"
+      type="checkbox"
+      checked={watchDateMode === "latest"}
+      onChange={toggleWatchDateMode}
+    />
+    <span className="slider"></span>
+  </label>
 </div>
 
+<p style={{ marginTop: 10, fontSize: 14, color: "#666" }}>
+  When enabled, watched dates show your most recent rewatch instead of your first watch.
+</p>
+
+
+      <div style={{
+          marginTop: 30,
+          padding: 15,
+          border: "1px solid #ccc",
+          borderRadius: 6
+        }}>
+        <h3>Diary Data</h3>
+
+        <button
+          onClick={() => exportDiaryToCSV(user)}
+          style={{ marginRight: 10 }}
+        >
+          Export CSV
+        </button>
+
+        <input
+          type="file"
+          accept=".csv"
+          onChange={e => {
+            if (e.target.files?.[0]) {
+              importDiaryFromCSV(e.target.files[0], user);
+              e.target.value = "";
+            }
+          }}
+        />
+      </div>
 
     </div>
   );
