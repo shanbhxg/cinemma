@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import AuthGate from "./components/AuthGate";
+import { onAuthStateChanged } from "firebase/auth";
 import { searchMovies, posterUrl } from "./api/tmdb";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, onSnapshot, getDocs } from "firebase/firestore";
 import { db, auth } from "./firebase";
 import DiaryEntryForm from "./components/DiaryEntryForm";
 import Home from "./pages/Home";
@@ -15,42 +16,51 @@ export default function App() {
   const [page, setPage] = useState("home");
 
   useEffect(() => {
-    if (!auth?.currentUser) return;
-
-    let cancelled = false;
-
-    async function loadDiary() {
-      const ref = collection(db, "users", auth.currentUser.uid, "diary");
-      const snap = await getDocs(ref);
-      const temp = {};
-
-      snap.forEach(doc => {
-        const d = doc.data();
-        if (!d?.movieId || !d?.createdAt) return;
-
-        const ts = d.createdAt?.toDate?.() ?? new Date(d.createdAt);
-        if (isNaN(ts)) return;
-
-        const key = String(d.movieId);
-        if (!temp[key]) temp[key] = [];
-        temp[key].push(ts);
+    let unsubDiary = null;
+  
+    const unsubAuth = onAuthStateChanged(auth, user => {
+      if (!user) {
+        setWatchedMap({});
+        return;
+      }
+  
+      const ref = collection(db, "users", user.uid, "diary");
+  
+      unsubDiary = onSnapshot(ref, snap => {
+        const temp = {};
+  
+        snap.forEach(doc => {
+          const d = doc.data();
+          if (!d?.movieId || !d?.createdAt) return;
+  
+          const ts = d.createdAt.toDate
+            ? d.createdAt.toDate()
+            : new Date(d.createdAt);
+  
+          const id = String(d.movieId);
+          if (!temp[id]) temp[id] = [];
+          temp[id].push(+ts);
+        });
+  
+        const mode = localStorage.getItem("watchDateMode") || "first";
+        const map = {};
+  
+        Object.entries(temp).forEach(([id, times]) => {
+          map[id] = new Date(
+            mode === "latest"
+              ? Math.max(...times)
+              : Math.min(...times)
+          );
+        });
+  
+        setWatchedMap(map);
       });
-
-      const mode = localStorage.getItem("watchDateMode") || "first";
-      const map = {};
-
-      Object.entries(temp).forEach(([id, dates]) => {
-        const times = dates.map(d => +d);
-        map[id] = new Date(
-          mode === "latest" ? Math.max(...times) : Math.min(...times)
-        );
-      });
-
-      if (!cancelled) setWatchedMap(map);
-    }
-
-    loadDiary();
-    return () => { cancelled = true; };
+    });
+  
+    return () => {
+      unsubAuth();
+      if (unsubDiary) unsubDiary();
+    };
   }, []);
 
   async function search() {

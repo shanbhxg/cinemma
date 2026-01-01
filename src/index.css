@@ -513,6 +513,305 @@ textarea:focus {
   gap: 12px;
 }
 
+/* ==== SETTINGS PAGE ==== */
+.settings-page {
+  padding: 20px;
+}
+
+.user-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fafafa;
+  margin-bottom: 20px;
+}
+
+.user-info .label {
+  font-size: 12px;
+  color: #666;
+}
+
+.user-info .value {
+  font-weight: 600;
+}
+
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  margin-top: 14px;
+  background: white;
+}
+
+/* ==== TOGGLE ==== */
+.toggle-switch {
+  position: relative;
+  width: 52px;
+  height: 28px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  inset: 0;
+  background: #ccc;
+  border-radius: 999px;
+  transition: 0.3s;
+}
+
+.slider::before {
+  content: "";
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  left: 3px;
+  top: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+.toggle-switch input:checked + .slider {
+  background: #111;
+}
+
+.toggle-switch input:checked + .slider::before {
+  transform: translateX(24px);
+}
+
+/* ==== DIARY DATA ==== */
+.diary-data {
+  margin-top: 28px;
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+.diary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.diary-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* ==== BUTTONS ==== */
+.btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  background: #111;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn.danger {
+  background: #d9534f;
+}
+
+.file-upload {
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: #eee;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.file-upload input {
+  display: none;
+}
+
+/* ==== SETTINGS ==== */
+.settings-page {
+  padding: 20px;
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.setting-label {
+  font-weight: 600;
+}
+
+.helper-text {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #666;
+}
+
+.user-info-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #f9f9f9;
+}
+
+.user-info-table {
+  border-collapse: collapse;
+  width: 70%;
+  table-layout: fixed;
+}
+
+.info-label {
+  padding: 5px 0;
+  font-weight: 500;
+  color: #555;
+  width: 120px;
+}
+
+.info-value {
+  padding: 5px 0;
+  font-weight: 600;
+  color: #333;
+  overflow-wrap: break-word;
+}
+
+.logout-btn {
+  padding: 8px 14px;
+  background: #d9534f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.diary-data {
+  margin-top: 30px;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.diary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.diary-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.file-upload {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  background: #fff;
+}
+
+.file-upload input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+@media (max-width: 600px) {
+  .user-info-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .user-info-table {
+    width: 100%;
+  }
+
+  .logout-btn {
+    width: 100%;
+  }
+
+  .diary-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .diary-actions {
+    justify-content: space-between;
+  }
+}
+
+
 /* ==== SPACING UTILS ==== */
 .mt-20 { margin-top: 20px; }
 .mt-12 { margin-top: 12px; }
