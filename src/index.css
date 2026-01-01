@@ -885,7 +885,7 @@ input:checked + .slider:before {
 }
 
 .month-two-col { display: flex; flex-direction: column; gap: 5px; }
-.month-row { display: grid; grid-template-columns: 1fr 1fr; gap: 100px; }
+.month-row { display: grid; grid-template-columns: 1fr 1fr; gap: 150px; }
 .poster-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
 
 

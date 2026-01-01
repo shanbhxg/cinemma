@@ -219,7 +219,7 @@ export default function Stats() {
       <section className="stats-section">
         <h3>Top languages</h3>
         {topLanguages.map(([l,c])=>(
-          <Row key={l} l={l.toUpperCase()} r={c} />
+            <Row key={l} l={new Intl.DisplayNames(["en"], { type: "language" }).of(l)} r={c}/>
         ))}
       </section>
     </div>
