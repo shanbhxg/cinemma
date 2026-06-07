@@ -39,7 +39,7 @@ const PROVIDERS = [
   "Sun Nxt",
   "JioHotstar",
   "Sony LIV",
-  "Apple TV Plus",
+  "Apple TV",
   "MUBI"
 ];
 
