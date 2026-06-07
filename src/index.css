@@ -138,7 +138,27 @@ textarea:focus {
   color: var(--mid-grey);
   font-style: italic;
 }
+.entry-actions {
+  display: flex;
+  gap: 8px;
+}
 
+.entry-edit {
+  background: var(--black);
+  color: var(--white);
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.entry-edit-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
 .entry-card {
   margin-top: 18px;
   padding: 16px;
