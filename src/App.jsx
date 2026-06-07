@@ -8,6 +8,7 @@ import DiaryEntryForm from "./components/DiaryEntryForm";
 import Home from "./pages/Home";
 import Settings from "./pages/Settings"; 
 import Stats from "./pages/Stats";
+import WatchlistProviders from "./pages/WatchlistProviders";
 
 export default function App() {
   const [query, setQuery] = useState("");
@@ -100,6 +101,12 @@ export default function App() {
               <i class="fa-solid fa-chart-simple"></i>
             </button>
             <button
+              className={page === "watchlist" ? "nav-btn active" : "nav-btn"}
+              onClick={() => setPage("watchlist")}
+            >
+              <i className="fa-solid fa-tv"></i>
+            </button>
+            <button
               className={page === "settings" ? "nav-btn active" : "nav-btn"}
               onClick={() => setPage("settings")}
             >
@@ -112,6 +119,8 @@ export default function App() {
           <Settings />
         ) : page === "stats" ? (
           <Stats />
+        ) : page === "watchlist" ? (
+          <WatchlistProviders />
         ) : (
           <>
             <div className="search-bar">
