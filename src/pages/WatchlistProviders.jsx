@@ -326,7 +326,10 @@ export default function WatchlistProviders() {
     if (!search.trim()) {
       return;
     }
-
+    setSelectedProvider(
+      "All Providers"
+    );
+    
     setLoading(true);
 
     try {
@@ -450,7 +453,7 @@ export default function WatchlistProviders() {
       : paginatedMovies;
 
   const hasImportedMovies =
-    movies.length > 0;
+    movies.length > 0 && searchResults.length === 0;
 
   return (
     <div
@@ -1010,9 +1013,7 @@ export default function WatchlistProviders() {
                 lineHeight: 1.7
               }}
             >
-              Search for a movie
-              <br />
-              or upload your watchlist.csv file.
+              No movies found for this provider.
             </div>
           )}
       </div>
