@@ -16,15 +16,18 @@ const MOVIES_PER_PAGE = 24;
 const COUNTRIES = [
   {
     code: "IN",
-    name: "India"
+    name: "India",
+    flag: "🇮🇳"
   },
   {
     code: "US",
-    name: "United States"
+    name: "United States",
+    flag: "🇺🇸"
   },
   {
     code: "AU",
-    name: "Australia"
+    name: "Australia",
+    flag: "🇦🇺"
   }
 ];
 
@@ -157,6 +160,9 @@ async function fetchProviders(
 }
 
 export default function WatchlistProviders() {
+  const isMobile =
+    window.innerWidth < 768;
+
   const [country, setCountry] =
     useState("IN");
 
@@ -443,495 +449,573 @@ export default function WatchlistProviders() {
       ? searchResults
       : paginatedMovies;
 
+  const hasImportedMovies =
+    movies.length > 0;
+
   return (
     <div
       style={{
-        padding: 16,
-        maxWidth: 1600,
-        margin: "0 auto"
+        minHeight: "100vh",
+        background:
+          "#f7f7f5",
+        padding: isMobile
+          ? 16
+          : 32
       }}
     >
       <div
         style={{
-          display: "flex",
-          flexDirection:
-            "column",
-          alignItems:
-            "center",
-          justifyContent:
-            "center",
-          marginBottom: 28
+          maxWidth: 1440,
+          margin: "0 auto"
         }}
       >
-        <h1
+        <div
           style={{
-            margin: 0,
-            marginBottom: 20,
-            fontSize: window.innerWidth <
-              768
-              ? 28
-              : 40,
-            textAlign:
-              "center"
+            display: "flex",
+            flexDirection:
+              "column",
+            alignItems:
+              "center",
+            marginBottom: 32
           }}
         >
-          Where to watch?
-        </h1>
+          <h1
+            style={{
+              margin: 0,
+              marginBottom: 10,
+              fontSize: isMobile
+                ? 34
+                : 56,
+              fontWeight: 800,
+              letterSpacing:
+                "-0.04em",
+              color: "#111",
+              textAlign:
+                "center"
+            }}
+          >
+            Where to watch?
+          </h1>
+
+          <div
+            style={{
+              color: "#777",
+              fontSize: 15,
+              textAlign:
+                "center",
+              marginBottom: 28
+            }}
+          >
+            Search movies or
+            upload your
+            watchlist.csv file.
+          </div>
+
+          <div
+            style={{
+              width: "100%",
+              maxWidth: 880,
+              display: "flex",
+              flexDirection:
+                isMobile
+                  ? "column"
+                  : "row",
+              gap: 12
+            }}
+          >
+            <input
+              value={search}
+              onChange={e =>
+                setSearch(
+                  e.target.value
+                )
+              }
+              onKeyDown={e => {
+                if (
+                  e.key ===
+                  "Enter"
+                ) {
+                  handleSearch();
+                }
+              }}
+              placeholder="Search any movie"
+              style={{
+                flex: 1,
+                border:
+                  "1px solid #e5e5e5",
+                background:
+                  "white",
+                borderRadius: 22,
+                padding:
+                  "18px 20px",
+                fontSize: 16,
+                outline: "none",
+                boxShadow:
+                  "0 4px 20px rgba(0,0,0,0.04)"
+              }}
+            />
+
+            <div
+              style={{
+                display: "flex",
+                gap: 12,
+                width: isMobile
+                  ? "100%"
+                  : "auto"
+              }}
+            >
+              <button
+                onClick={
+                  handleSearch
+                }
+                style={{
+                  flex: 1,
+                  border: "none",
+                  background:
+                    "#111",
+                  color: "white",
+                  borderRadius: 22,
+                  padding:
+                    "0 26px",
+                  fontSize: 15,
+                  fontWeight: 700,
+                  cursor:
+                    "pointer",
+                  minHeight: 58
+                }}
+              >
+                Search
+              </button>
+
+              <label
+                style={{
+                  width: 58,
+                  height: 58,
+                  borderRadius: 22,
+                  background:
+                    "white",
+                  border:
+                    "1px solid #e5e5e5",
+                  display: "flex",
+                  alignItems:
+                    "center",
+                  justifyContent:
+                    "center",
+                  cursor:
+                    "pointer",
+                  boxShadow:
+                    "0 4px 20px rgba(0,0,0,0.04)"
+                }}
+              >
+                <i
+                  className="fa-solid fa-arrow-up-from-bracket"
+                  style={{
+                    fontSize: 16,
+                    color: "#111"
+                  }}
+                ></i>
+
+                <input
+                  type="file"
+                  accept=".csv"
+                  hidden
+                  onChange={async e => {
+                    const file =
+                      e.target
+                        .files?.[0];
+
+                    if (file) {
+                      await handleFile(
+                        file
+                      );
+
+                      e.target.value =
+                        "";
+                    }
+                  }}
+                />
+              </label>
+            </div>
+          </div>
+        </div>
 
         <div
           style={{
             display: "flex",
-            alignItems:
-              "center",
-            gap: 10,
-            width: "100%",
-            maxWidth: 900,
             flexDirection:
-              window.innerWidth <
-              768
+              isMobile
                 ? "column"
-                : "row"
+                : "row",
+            justifyContent:
+              "space-between",
+            alignItems:
+              isMobile
+                ? "stretch"
+                : "center",
+            gap: 16,
+            marginBottom: 28
           }}
         >
-          <input
-            value={search}
-            onChange={e =>
-              setSearch(
-                e.target.value
-              )
-            }
-            onKeyDown={e => {
-              if (
-                e.key ===
-                "Enter"
-              ) {
-                handleSearch();
-              }
-            }}
-            placeholder="Search any movie..."
-            style={{
-              flex: 1,
-              width: "100%",
-              padding:
-                "16px 18px",
-              borderRadius: 16,
-              border:
-                "1px solid #ddd",
-              fontSize: 16
-            }}
-          />
-
           <div
             style={{
               display: "flex",
               gap: 10,
-              width:
-                window.innerWidth <
-                768
-                  ? "100%"
-                  : "auto"
+              alignItems:
+                "center",
+              overflowX: "auto",
+              paddingBottom: 2
             }}
           >
-            <button
-              onClick={
-                handleSearch
-              }
-              style={{
-                flex: 1,
-                padding:
-                  "16px 18px",
-                borderRadius: 16,
-                border:
-                  "none",
-                background:
-                  "black",
-                color: "white",
-                cursor:
-                  "pointer",
-                fontWeight: 700,
-                fontSize: 15
-              }}
-            >
-              Search
-            </button>
-
-            <label
-              style={{
-                width: 56,
-                height: 56,
-                borderRadius: 16,
-                background:
-                  "#202830",
-                display: "flex",
-                alignItems:
-                  "center",
-                justifyContent:
-                  "center",
-                cursor:
-                  "pointer",
-                flexShrink: 0
-              }}
-            >
-              <i
-                className="fa-solid fa-arrow-up-from-bracket"
-                style={{
-                  color:
-                    "white",
-                  fontSize: 15
-                }}
-              ></i>
-
-              <input
-                type="file"
-                accept=".csv"
-                hidden
-                onChange={async e => {
-                  const file =
-                    e.target
-                      .files?.[0];
-
-                  if (file) {
-                    await handleFile(
-                      file
+            {COUNTRIES.map(
+              item => (
+                <button
+                  key={item.code}
+                  onClick={() => {
+                    setCountry(
+                      item.code
                     );
 
-                    e.target.value =
-                      "";
-                  }
-                }}
-              />
-            </label>
+                    setPage(1);
+                  }}
+                  style={{
+                    border:
+                      country ===
+                      item.code
+                        ? "1px solid #111"
+                        : "1px solid #e5e5e5",
+                    background:
+                      country ===
+                      item.code
+                        ? "#111"
+                        : "white",
+                    color:
+                      country ===
+                      item.code
+                        ? "white"
+                        : "#111",
+                    borderRadius: 999,
+                    padding:
+                      "10px 14px",
+                    fontSize: 20,
+                    cursor:
+                      "pointer",
+                    minWidth: 54,
+                    transition:
+                      "0.2s"
+                  }}
+                >
+                  {item.flag}
+                </button>
+              )
+            )}
           </div>
-        </div>
-      </div>
 
-      <div
-        style={{
-          display: "flex",
-          gap: 10,
-          marginBottom: 24,
-          flexWrap: "wrap",
-          flexDirection:
-            window.innerWidth <
-            768
-              ? "column"
-              : "row"
-        }}
-      >
-        <select
-          value={country}
-          onChange={e => {
-            setCountry(
-              e.target.value
-            );
+          {hasImportedMovies && (
+            <select
+              value={
+                selectedProvider
+              }
+              onChange={e => {
+                setSelectedProvider(
+                  e.target.value
+                );
 
-            setPage(1);
-          }}
-          style={{
-            padding:
-              "12px 14px",
-            borderRadius: 12,
-            border:
-              "1px solid #ccc",
-            minWidth: 180,
-            width:
-              window.innerWidth <
-              768
-                ? "100%"
-                : "auto"
-          }}
-        >
-          {COUNTRIES.map(
-            country => (
-              <option
-                key={
-                  country.code
-                }
-                value={
-                  country.code
-                }
-              >
-                {country.name}
-              </option>
-            )
-          )}
-        </select>
-
-        <select
-          value={
-            selectedProvider
-          }
-          onChange={e => {
-            setSelectedProvider(
-              e.target.value
-            );
-
-            setPage(1);
-          }}
-          style={{
-            padding:
-              "12px 14px",
-            borderRadius: 12,
-            border:
-              "1px solid #ccc",
-            minWidth: 240,
-            width:
-              window.innerWidth <
-              768
-                ? "100%"
-                : "auto"
-          }}
-        >
-          {PROVIDERS.map(
-            provider => (
-              <option
-                key={provider}
-                value={provider}
-              >
-                {provider}
-              </option>
-            )
-          )}
-        </select>
-      </div>
-
-      {loading && (
-        <div>
-          Loading...
-        </div>
-      )}
-
-      {!loading &&
-        displayMovies.length >
-          0 && (
-          <>
-            <div
+                setPage(1);
+              }}
               style={{
-                display: "grid",
-                gridTemplateColumns:
-                  window.innerWidth <
-                  768
-                    ? "repeat(2, minmax(0, 1fr))"
-                    : "repeat(4, minmax(0, 1fr))",
-                gap: 16
+                border:
+                  "1px solid #e5e5e5",
+                background:
+                  "white",
+                borderRadius: 16,
+                padding:
+                  "14px 16px",
+                fontSize: 14,
+                outline: "none",
+                minWidth: isMobile
+                  ? "100%"
+                  : 240,
+                boxShadow:
+                  "0 4px 20px rgba(0,0,0,0.04)"
               }}
             >
-              {displayMovies.map(
-                movie => (
-                  <div
-                    key={movie.id}
-                    style={{
-                      background:
-                        "white",
-                      border:
-                        "1px solid #e4e4e4",
-                      borderRadius: 16,
-                      overflow:
-                        "hidden",
-                      boxShadow:
-                        "0 2px 12px rgba(0,0,0,0.05)"
-                    }}
+              {PROVIDERS.map(
+                provider => (
+                  <option
+                    key={provider}
+                    value={provider}
                   >
-                    <div
-                      style={{
-                        aspectRatio:
-                          "2 / 3",
-                        background:
-                          "#eee"
-                      }}
-                    >
-                      {movie.poster && (
-                        <img
-                          src={`https://image.tmdb.org/t/p/w500${movie.poster}`}
-                          alt={
-                            movie.title
-                          }
-                          style={{
-                            width:
-                              "100%",
-                            height:
-                              "100%",
-                            objectFit:
-                              "cover"
-                          }}
-                        />
-                      )}
-                    </div>
-
-                    <div
-                      style={{
-                        padding: 12
-                      }}
-                    >
-                      <div
-                        style={{
-                          fontWeight: 700,
-                          lineHeight: 1.3,
-                          fontSize:
-                            14
-                        }}
-                      >
-                        {
-                          movie.title
-                        }
-                      </div>
-
-                      <div
-                        style={{
-                          marginTop: 4,
-                          fontSize: 13,
-                          color:
-                            "#777"
-                        }}
-                      >
-                        {
-                          movie.year
-                        }
-                      </div>
-
-                      <div
-                        style={{
-                          display:
-                            "flex",
-                          flexWrap:
-                            "wrap",
-                          gap: 6,
-                          marginTop: 12
-                        }}
-                      >
-                        {movie.providers
-                          .filter(
-                            provider =>
-                              selectedProvider ===
-                                "All Providers" ||
-                              normalizeProvider(
-                                provider.provider_name
-                              ) ===
-                                normalizeProvider(
-                                  selectedProvider
-                                )
-                          )
-                          .map(
-                            provider => (
-                              <img
-                                key={
-                                  provider.provider_id
-                                }
-                                src={`https://image.tmdb.org/t/p/w92${provider.logo_path}`}
-                                alt={
-                                  provider.provider_name
-                                }
-                                title={
-                                  provider.provider_name
-                                }
-                                style={{
-                                  width: 32,
-                                  height: 32,
-                                  borderRadius: 8
-                                }}
-                              />
-                            )
-                          )}
-                      </div>
-                    </div>
-                  </div>
+                    {provider}
+                  </option>
                 )
               )}
-            </div>
+            </select>
+          )}
+        </div>
 
-            {searchResults.length ===
-              0 && (
-              <div
-                style={{
-                  display:
-                    "flex",
-                  justifyContent:
-                    "center",
-                  alignItems:
-                    "center",
-                  gap: 12,
-                  marginTop: 28,
-                  flexWrap:
-                    "wrap"
-                }}
-              >
-                <button
-                  disabled={
-                    page === 1
-                  }
-                  onClick={() =>
-                    setPage(
-                      prev =>
-                        prev - 1
-                    )
-                  }
-                  style={{
-                    padding:
-                      "10px 14px",
-                    borderRadius: 10,
-                    border:
-                      "1px solid #ccc",
-                    background:
-                      "white"
-                  }}
-                >
-                  Prev
-                </button>
-
-                <div
-                  style={{
-                    fontSize: 14
-                  }}
-                >
-                  Page {page} of{" "}
-                  {totalPages}
-                </div>
-
-                <button
-                  disabled={
-                    page ===
-                    totalPages
-                  }
-                  onClick={() =>
-                    setPage(
-                      prev =>
-                        prev + 1
-                    )
-                  }
-                  style={{
-                    padding:
-                      "10px 14px",
-                    borderRadius: 10,
-                    border:
-                      "1px solid #ccc",
-                    background:
-                      "white"
-                  }}
-                >
-                  Next
-                </button>
-              </div>
-            )}
-          </>
-        )}
-
-      {!loading &&
-        displayMovies.length ===
-          0 && (
+        {loading && (
           <div
             style={{
               textAlign:
                 "center",
+              marginTop: 80,
               color: "#777",
-              marginTop: 60,
               fontSize: 15
             }}
           >
-            Search for a movie or
-            upload a Letterboxd
-            watchlist.
+            Loading...
           </div>
         )}
+
+        {!loading &&
+          displayMovies.length >
+            0 && (
+            <>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns:
+                    isMobile
+                      ? "repeat(2, minmax(0, 1fr))"
+                      : "repeat(4, minmax(0, 1fr))",
+                  gap: isMobile
+                    ? 14
+                    : 22
+                }}
+              >
+                {displayMovies.map(
+                  movie => (
+                    <div
+                      key={movie.id}
+                      style={{
+                        background:
+                          "white",
+                        borderRadius: 24,
+                        overflow:
+                          "hidden",
+                        border:
+                          "1px solid #ececec",
+                        boxShadow:
+                          "0 8px 30px rgba(0,0,0,0.05)"
+                      }}
+                    >
+                      <div
+                        style={{
+                          aspectRatio:
+                            "2 / 3",
+                          background:
+                            "#ececec"
+                        }}
+                      >
+                        {movie.poster && (
+                          <img
+                            src={`https://image.tmdb.org/t/p/w500${movie.poster}`}
+                            alt={
+                              movie.title
+                            }
+                            style={{
+                              width:
+                                "100%",
+                              height:
+                                "100%",
+                              objectFit:
+                                "cover"
+                            }}
+                          />
+                        )}
+                      </div>
+
+                      <div
+                        style={{
+                          padding: 14
+                        }}
+                      >
+                        <div
+                          style={{
+                            fontWeight: 700,
+                            fontSize:
+                              isMobile
+                                ? 13
+                                : 15,
+                            lineHeight: 1.35,
+                            color:
+                              "#111"
+                          }}
+                        >
+                          {
+                            movie.title
+                          }
+                        </div>
+
+                        <div
+                          style={{
+                            marginTop: 4,
+                            fontSize: 13,
+                            color:
+                              "#888"
+                          }}
+                        >
+                          {
+                            movie.year
+                          }
+                        </div>
+
+                        <div
+                          style={{
+                            display:
+                              "flex",
+                            flexWrap:
+                              "wrap",
+                            gap: 6,
+                            marginTop: 14
+                          }}
+                        >
+                          {movie.providers
+                            .filter(
+                              provider =>
+                                selectedProvider ===
+                                  "All Providers" ||
+                                normalizeProvider(
+                                  provider.provider_name
+                                ) ===
+                                  normalizeProvider(
+                                    selectedProvider
+                                  )
+                            )
+                            .map(
+                              provider => (
+                                <img
+                                  key={
+                                    provider.provider_id
+                                  }
+                                  src={`https://image.tmdb.org/t/p/w92${provider.logo_path}`}
+                                  alt={
+                                    provider.provider_name
+                                  }
+                                  title={
+                                    provider.provider_name
+                                  }
+                                  style={{
+                                    width:
+                                      isMobile
+                                        ? 28
+                                        : 34,
+                                    height:
+                                      isMobile
+                                        ? 28
+                                        : 34,
+                                    borderRadius: 10
+                                  }}
+                                />
+                              )
+                            )}
+                        </div>
+                      </div>
+                    </div>
+                  )
+                )}
+              </div>
+
+              {searchResults.length ===
+                0 && (
+                <div
+                  style={{
+                    display:
+                      "flex",
+                    justifyContent:
+                      "center",
+                    alignItems:
+                      "center",
+                    gap: 12,
+                    marginTop: 36
+                  }}
+                >
+                  <button
+                    disabled={
+                      page === 1
+                    }
+                    onClick={() =>
+                      setPage(
+                        prev =>
+                          prev - 1
+                      )
+                    }
+                    style={{
+                      border:
+                        "1px solid #ddd",
+                      background:
+                        "white",
+                      borderRadius: 14,
+                      padding:
+                        "12px 18px",
+                      cursor:
+                        "pointer"
+                    }}
+                  >
+                    Prev
+                  </button>
+
+                  <div
+                    style={{
+                      fontSize: 14,
+                      color: "#666"
+                    }}
+                  >
+                    {page} /{" "}
+                    {
+                      totalPages
+                    }
+                  </div>
+
+                  <button
+                    disabled={
+                      page ===
+                      totalPages
+                    }
+                    onClick={() =>
+                      setPage(
+                        prev =>
+                          prev + 1
+                      )
+                    }
+                    style={{
+                      border:
+                        "1px solid #ddd",
+                      background:
+                        "white",
+                      borderRadius: 14,
+                      padding:
+                        "12px 18px",
+                      cursor:
+                        "pointer"
+                    }}
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+
+        {!loading &&
+          displayMovies.length ===
+            0 && (
+            <div
+              style={{
+                textAlign:
+                  "center",
+                marginTop: 120,
+                color: "#888",
+                fontSize: 15,
+                lineHeight: 1.7
+              }}
+            >
+              Search for a movie
+              <br />
+              or upload your watchlist.csv file.
+            </div>
+          )}
+      </div>
     </div>
   );
 }
