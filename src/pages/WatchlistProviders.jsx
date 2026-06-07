@@ -446,7 +446,7 @@ export default function WatchlistProviders() {
   return (
     <div
       style={{
-        padding: 24,
+        padding: 16,
         maxWidth: 1600,
         margin: "0 auto"
       }}
@@ -460,14 +460,19 @@ export default function WatchlistProviders() {
             "center",
           justifyContent:
             "center",
-          marginBottom: 36
+          marginBottom: 28
         }}
       >
         <h1
           style={{
             margin: 0,
-            marginBottom: 24,
-            fontSize: 40
+            marginBottom: 20,
+            fontSize: window.innerWidth <
+              768
+              ? 28
+              : 40,
+            textAlign:
+              "center"
           }}
         >
           Where to watch?
@@ -478,9 +483,14 @@ export default function WatchlistProviders() {
             display: "flex",
             alignItems:
               "center",
-            gap: 12,
+            gap: 10,
             width: "100%",
-            maxWidth: 900
+            maxWidth: 900,
+            flexDirection:
+              window.innerWidth <
+              768
+                ? "column"
+                : "row"
           }}
         >
           <input
@@ -501,90 +511,111 @@ export default function WatchlistProviders() {
             placeholder="Search any movie..."
             style={{
               flex: 1,
+              width: "100%",
               padding:
-                "18px 22px",
-              borderRadius: 18,
+                "16px 18px",
+              borderRadius: 16,
               border:
                 "1px solid #ddd",
-              fontSize: 18
+              fontSize: 16
             }}
           />
 
-          <button
-            onClick={
-              handleSearch
-            }
+          <div
             style={{
-              padding:
-                "18px 22px",
-              borderRadius: 18,
-              border: "none",
-              background:
-                "black",
-              color: "white",
-              cursor:
-                "pointer",
-              fontWeight: 700,
-              fontSize: 16
-            }}
-          >
-            Search
-          </button>
-
-          <label
-            style={{
-              width: 60,
-              height: 60,
-              borderRadius: 18,
-              background:
-                "#202830",
               display: "flex",
-              alignItems:
-                "center",
-              justifyContent:
-                "center",
-              cursor:
-                "pointer",
-              flexShrink: 0
+              gap: 10,
+              width:
+                window.innerWidth <
+                768
+                  ? "100%"
+                  : "auto"
             }}
           >
-            <i
-              className="fa-solid fa-arrow-up-from-bracket"
+            <button
+              onClick={
+                handleSearch
+              }
               style={{
+                flex: 1,
+                padding:
+                  "16px 18px",
+                borderRadius: 16,
+                border:
+                  "none",
+                background:
+                  "black",
                 color: "white",
+                cursor:
+                  "pointer",
+                fontWeight: 700,
                 fontSize: 15
               }}
-            ></i>
+            >
+              Search
+            </button>
 
-            <input
-              type="file"
-              accept=".csv"
-              hidden
-              onChange={async e => {
-                const file =
-                  e.target
-                    .files?.[0];
-
-                if (file) {
-                  await handleFile(
-                    file
-                  );
-
-                  e.target.value =
-                    "";
-                }
+            <label
+              style={{
+                width: 56,
+                height: 56,
+                borderRadius: 16,
+                background:
+                  "#202830",
+                display: "flex",
+                alignItems:
+                  "center",
+                justifyContent:
+                  "center",
+                cursor:
+                  "pointer",
+                flexShrink: 0
               }}
-            />
-          </label>
+            >
+              <i
+                className="fa-solid fa-arrow-up-from-bracket"
+                style={{
+                  color:
+                    "white",
+                  fontSize: 15
+                }}
+              ></i>
+
+              <input
+                type="file"
+                accept=".csv"
+                hidden
+                onChange={async e => {
+                  const file =
+                    e.target
+                      .files?.[0];
+
+                  if (file) {
+                    await handleFile(
+                      file
+                    );
+
+                    e.target.value =
+                      "";
+                  }
+                }}
+              />
+            </label>
+          </div>
         </div>
       </div>
 
       <div
         style={{
           display: "flex",
-          gap: 12,
-          marginBottom: 28,
-          flexWrap: "wrap"
+          gap: 10,
+          marginBottom: 24,
+          flexWrap: "wrap",
+          flexDirection:
+            window.innerWidth <
+            768
+              ? "column"
+              : "row"
         }}
       >
         <select
@@ -602,7 +633,12 @@ export default function WatchlistProviders() {
             borderRadius: 12,
             border:
               "1px solid #ccc",
-            minWidth: 180
+            minWidth: 180,
+            width:
+              window.innerWidth <
+              768
+                ? "100%"
+                : "auto"
           }}
         >
           {COUNTRIES.map(
@@ -638,7 +674,12 @@ export default function WatchlistProviders() {
             borderRadius: 12,
             border:
               "1px solid #ccc",
-            minWidth: 240
+            minWidth: 240,
+            width:
+              window.innerWidth <
+              768
+                ? "100%"
+                : "auto"
           }}
         >
           {PROVIDERS.map(
@@ -668,8 +709,11 @@ export default function WatchlistProviders() {
               style={{
                 display: "grid",
                 gridTemplateColumns:
-                  "repeat(4, minmax(0, 1fr))",
-                gap: 22
+                  window.innerWidth <
+                  768
+                    ? "repeat(2, minmax(0, 1fr))"
+                    : "repeat(4, minmax(0, 1fr))",
+                gap: 16
               }}
             >
               {displayMovies.map(
@@ -681,7 +725,7 @@ export default function WatchlistProviders() {
                         "white",
                       border:
                         "1px solid #e4e4e4",
-                      borderRadius: 18,
+                      borderRadius: 16,
                       overflow:
                         "hidden",
                       boxShadow:
@@ -716,13 +760,15 @@ export default function WatchlistProviders() {
 
                     <div
                       style={{
-                        padding: 14
+                        padding: 12
                       }}
                     >
                       <div
                         style={{
                           fontWeight: 700,
-                          lineHeight: 1.3
+                          lineHeight: 1.3,
+                          fontSize:
+                            14
                         }}
                       >
                         {
@@ -733,7 +779,7 @@ export default function WatchlistProviders() {
                       <div
                         style={{
                           marginTop: 4,
-                          fontSize: 14,
+                          fontSize: 13,
                           color:
                             "#777"
                         }}
@@ -749,8 +795,8 @@ export default function WatchlistProviders() {
                             "flex",
                           flexWrap:
                             "wrap",
-                          gap: 8,
-                          marginTop: 14
+                          gap: 6,
+                          marginTop: 12
                         }}
                       >
                         {movie.providers
@@ -779,9 +825,9 @@ export default function WatchlistProviders() {
                                   provider.provider_name
                                 }
                                 style={{
-                                  width: 38,
-                                  height: 38,
-                                  borderRadius: 10
+                                  width: 32,
+                                  height: 32,
+                                  borderRadius: 8
                                 }}
                               />
                             )
@@ -803,8 +849,10 @@ export default function WatchlistProviders() {
                     "center",
                   alignItems:
                     "center",
-                  gap: 14,
-                  marginTop: 32
+                  gap: 12,
+                  marginTop: 28,
+                  flexWrap:
+                    "wrap"
                 }}
               >
                 <button
@@ -819,20 +867,22 @@ export default function WatchlistProviders() {
                   }
                   style={{
                     padding:
-                      "10px 16px",
+                      "10px 14px",
                     borderRadius: 10,
                     border:
                       "1px solid #ccc",
                     background:
-                      "white",
-                    cursor:
-                      "pointer"
+                      "white"
                   }}
                 >
                   Prev
                 </button>
 
-                <div>
+                <div
+                  style={{
+                    fontSize: 14
+                  }}
+                >
                   Page {page} of{" "}
                   {totalPages}
                 </div>
@@ -850,14 +900,12 @@ export default function WatchlistProviders() {
                   }
                   style={{
                     padding:
-                      "10px 16px",
+                      "10px 14px",
                     borderRadius: 10,
                     border:
                       "1px solid #ccc",
                     background:
-                      "white",
-                    cursor:
-                      "pointer"
+                      "white"
                   }}
                 >
                   Next
@@ -875,7 +923,8 @@ export default function WatchlistProviders() {
               textAlign:
                 "center",
               color: "#777",
-              marginTop: 60
+              marginTop: 60,
+              fontSize: 15
             }}
           >
             Search for a movie or
