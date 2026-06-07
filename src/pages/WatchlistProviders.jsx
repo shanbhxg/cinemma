@@ -1,15 +1,31 @@
-import { useEffect, useMemo, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState
+} from "react";
 
-const TMDB_KEY = import.meta.env.VITE_TMDB_API_KEY;
+const TMDB_KEY =
+  import.meta.env
+    .VITE_TMDB_API_KEY;
 
-const BASE = "https://api.themoviedb.org/3";
+const BASE =
+  "https://api.themoviedb.org/3";
 
 const MOVIES_PER_PAGE = 24;
 
 const COUNTRIES = [
-  { code: "IN", name: "India" },
-  { code: "US", name: "United States" },
-  { code: "AU", name: "Australia" }
+  {
+    code: "IN",
+    name: "India"
+  },
+  {
+    code: "US",
+    name: "United States"
+  },
+  {
+    code: "AU",
+    name: "Australia"
+  }
 ];
 
 const PROVIDERS = [
@@ -17,19 +33,24 @@ const PROVIDERS = [
   "Netflix",
   "Amazon Prime Video",
   "ZEE5",
-  "SunNXT",
+  "Sun Nxt",
   "JioHotstar",
   "Sony LIV",
-  "Apple TV",
+  "Apple TV Plus",
   "MUBI"
 ];
 
-function normalizeProvider(name) {
+function normalizeProvider(
+  name
+) {
   return name
     .toLowerCase()
     .replace(/\+/g, "plus")
     .replace(/\s+/g, "")
-    .replace(/[^a-z0-9]/g, "");
+    .replace(
+      /[^a-z0-9]/g,
+      ""
+    );
 }
 
 function parseCSV(text) {
@@ -52,56 +73,56 @@ function parseCSV(text) {
       )
     );
 
-  return lines.slice(1).map(line => {
-    const values =
-      line
-        .match(
-          /(".*?"|[^",]+)(?=\s*,|\s*$)/g
-        )
-        ?.map(value =>
-          value
-            .replace(
-              /^"|"$/g,
-              ""
-            )
-            .replace(
-              /""/g,
-              '"'
-            )
-        ) || [];
+  return lines.slice(1).map(
+    line => {
+      const values =
+        line
+          .match(
+            /(".*?"|[^",]+)(?=\s*,|\s*$)/g
+          )
+          ?.map(value =>
+            value
+              .replace(
+                /^"|"$/g,
+                ""
+              )
+              .replace(
+                /""/g,
+                '"'
+              )
+          ) || [];
 
-    return Object.fromEntries(
-      headers.map(
-        (header, index) => [
-          header,
-          values[index]
-        ]
-      )
-    );
-  });
+      return Object.fromEntries(
+        headers.map(
+          (
+            header,
+            index
+          ) => [
+            header,
+            values[index]
+          ]
+        )
+      );
+    }
+  );
 }
 
-async function searchMovie(
-  title,
-  year
+async function searchMovies(
+  query
 ) {
-  const url =
-    `${BASE}/search/movie?api_key=${TMDB_KEY}` +
-    `&query=${encodeURIComponent(
-      title
-    )}` +
-    (year
-      ? `&year=${year}`
-      : "");
-
   const response =
-    await fetch(url);
+    await fetch(
+      `${BASE}/search/movie?api_key=${TMDB_KEY}&query=${encodeURIComponent(
+        query
+      )}`
+    );
 
   const data =
     await response.json();
 
   return (
-    data.results?.[0] || null
+    data.results?.slice(0, 4) ||
+    []
   );
 }
 
@@ -145,13 +166,47 @@ export default function WatchlistProviders() {
   const [loading, setLoading] =
     useState(false);
 
+  const [search, setSearch] =
+    useState("");
+
+  const [
+    searchResults,
+    setSearchResults
+  ] = useState([]);
+
   const [
     selectedProvider,
     setSelectedProvider
-  ] = useState("All Providers");
+  ] = useState(
+    "All Providers"
+  );
 
   const [page, setPage] =
     useState(1);
+
+  async function enrichMovie(
+    movie,
+    selectedCountry
+  ) {
+    const providers =
+      await fetchProviders(
+        movie.id,
+        selectedCountry
+      );
+
+    return {
+      id: movie.id,
+      title: movie.title,
+      year:
+        movie.release_date?.slice(
+          0,
+          4
+        ) || "",
+      poster:
+        movie.poster_path,
+      providers
+    };
+  }
 
   async function processMovies(
     parsedMovies,
@@ -175,37 +230,39 @@ export default function WatchlistProviders() {
           continue;
         }
 
-        const movie =
-          await searchMovie(
-            title,
-            year
+        const response =
+          await fetch(
+            `${BASE}/search/movie?api_key=${TMDB_KEY}&query=${encodeURIComponent(
+              title
+            )}${
+              year
+                ? `&year=${year}`
+                : ""
+            }`
           );
+
+        const data =
+          await response.json();
+
+        const movie =
+          data.results?.[0];
 
         if (!movie) {
           continue;
         }
 
-        const providers =
-          await fetchProviders(
-            movie.id,
+        const enriched =
+          await enrichMovie(
+            movie,
             selectedCountry
           );
 
-        rows.push({
-          id: movie.id,
-          title: movie.title,
-          year:
-            movie.release_date?.slice(
-              0,
-              4
-            ) || "",
-          poster:
-            movie.poster_path,
-          providers
-        });
+        rows.push(enriched);
       }
 
       setMovies(rows);
+
+      setSearchResults([]);
 
       setPage(1);
     } catch (err) {
@@ -219,46 +276,122 @@ export default function WatchlistProviders() {
     setLoading(false);
   }
 
-  async function handleFile(file) {
-    const text =
-      await file.text();
+  async function handleFile(
+    file
+  ) {
+    try {
+      setLoading(true);
 
-    const parsed =
-      parseCSV(text);
+      const text =
+        await file.text();
 
-    await processMovies(
-      parsed,
-      country
-    );
+      const parsed =
+        parseCSV(text);
+
+      if (
+        !parsed ||
+        parsed.length === 0
+      ) {
+        alert(
+          "Invalid Letterboxd CSV."
+        );
+
+        setLoading(false);
+
+        return;
+      }
+
+      await processMovies(
+        parsed,
+        country
+      );
+    } catch (err) {
+      console.error(err);
+
+      alert(
+        "Failed to upload CSV."
+      );
+
+      setLoading(false);
+    }
+  }
+
+  async function handleSearch() {
+    if (!search.trim()) {
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const results =
+        await searchMovies(
+          search
+        );
+
+      const enriched =
+        await Promise.all(
+          results.map(movie =>
+            enrichMovie(
+              movie,
+              country
+            )
+          )
+        );
+
+      setSearchResults(
+        enriched
+      );
+    } catch (err) {
+      console.error(err);
+    }
+
+    setLoading(false);
   }
 
   useEffect(() => {
     async function refreshProviders() {
-      if (movies.length === 0) {
+      if (
+        movies.length === 0 &&
+        searchResults.length === 0
+      ) {
         return;
       }
 
       setLoading(true);
 
-      const updatedMovies =
-        await Promise.all(
-          movies.map(
-            async movie => {
-              const providers =
-                await fetchProviders(
-                  movie.id,
-                  country
-                );
+      try {
+        const updatedMovies =
+          await Promise.all(
+            movies.map(movie =>
+              enrichMovie(
+                movie,
+                country
+              )
+            )
+          );
 
-              return {
-                ...movie,
-                providers
-              };
-            }
-          )
+        const updatedSearch =
+          await Promise.all(
+            searchResults.map(
+              movie =>
+                enrichMovie(
+                  movie,
+                  country
+                )
+            )
+          );
+
+        setMovies(
+          updatedMovies
         );
 
-      setMovies(updatedMovies);
+        setSearchResults(
+          updatedSearch
+        );
+      } catch (err) {
+        console.error(err);
+      }
 
       setLoading(false);
     }
@@ -287,7 +420,10 @@ export default function WatchlistProviders() {
               )
           )
       );
-    }, [movies, selectedProvider]);
+    }, [
+      movies,
+      selectedProvider
+    ]);
 
   const totalPages =
     Math.ceil(
@@ -302,82 +438,153 @@ export default function WatchlistProviders() {
       page * MOVIES_PER_PAGE
     );
 
+  const displayMovies =
+    searchResults.length > 0
+      ? searchResults
+      : paginatedMovies;
+
   return (
     <div
       style={{
-        padding: 20
+        padding: 24,
+        maxWidth: 1600,
+        margin: "0 auto"
       }}
     >
       <div
         style={{
           display: "flex",
+          flexDirection:
+            "column",
+          alignItems:
+            "center",
           justifyContent:
-            "space-between",
-          alignItems: "center",
-          flexWrap: "wrap",
-          gap: 16,
-          marginBottom: 24
+            "center",
+          marginBottom: 36
         }}
       >
-        <div>
-          <h2
-            style={{
-              margin: 0,
-              fontSize: 28
-            }}
-          >
-            Watchlist Providers
-          </h2>
-
-          <p
-            style={{
-              marginTop: 6,
-              color: "#777"
-            }}
-          >
-            Upload your Letterboxd
-            watchlist CSV
-          </p>
-        </div>
-
-        <label
+        <h1
           style={{
-            padding: "12px 18px",
-            background: "black",
-            color: "white",
-            borderRadius: 12,
-            cursor: "pointer",
-            fontWeight: 600
+            margin: 0,
+            marginBottom: 24,
+            fontSize: 40
           }}
         >
-          Upload CSV
+          Where to watch?
+        </h1>
 
+        <div
+          style={{
+            display: "flex",
+            alignItems:
+              "center",
+            gap: 12,
+            width: "100%",
+            maxWidth: 900
+          }}
+        >
           <input
-            type="file"
-            accept=".csv"
-            hidden
-            onChange={e => {
+            value={search}
+            onChange={e =>
+              setSearch(
+                e.target.value
+              )
+            }
+            onKeyDown={e => {
               if (
-                e.target.files?.[0]
+                e.key ===
+                "Enter"
               ) {
-                handleFile(
-                  e.target.files[0]
-                );
-
-                e.target.value =
-                  "";
+                handleSearch();
               }
             }}
+            placeholder="Search any movie..."
+            style={{
+              flex: 1,
+              padding:
+                "18px 22px",
+              borderRadius: 18,
+              border:
+                "1px solid #ddd",
+              fontSize: 18
+            }}
           />
-        </label>
+
+          <button
+            onClick={
+              handleSearch
+            }
+            style={{
+              padding:
+                "18px 22px",
+              borderRadius: 18,
+              border: "none",
+              background:
+                "black",
+              color: "white",
+              cursor:
+                "pointer",
+              fontWeight: 700,
+              fontSize: 16
+            }}
+          >
+            Search
+          </button>
+
+          <label
+            style={{
+              width: 60,
+              height: 60,
+              borderRadius: 18,
+              background:
+                "#202830",
+              display: "flex",
+              alignItems:
+                "center",
+              justifyContent:
+                "center",
+              cursor:
+                "pointer",
+              flexShrink: 0
+            }}
+          >
+            <i
+              className="fa-solid fa-arrow-up-from-bracket"
+              style={{
+                color: "white",
+                fontSize: 15
+              }}
+            ></i>
+
+            <input
+              type="file"
+              accept=".csv"
+              hidden
+              onChange={async e => {
+                const file =
+                  e.target
+                    .files?.[0];
+
+                if (file) {
+                  await handleFile(
+                    file
+                  );
+
+                  e.target.value =
+                    "";
+                }
+              }}
+            />
+          </label>
+        </div>
       </div>
 
       <div
         style={{
           display: "flex",
           gap: 12,
-          flexWrap: "wrap",
-          marginBottom: 28
+          marginBottom: 28,
+          flexWrap: "wrap"
         }}
       >
         <select
@@ -390,7 +597,8 @@ export default function WatchlistProviders() {
             setPage(1);
           }}
           style={{
-            padding: "12px 14px",
+            padding:
+              "12px 14px",
             borderRadius: 12,
             border:
               "1px solid #ccc",
@@ -425,7 +633,8 @@ export default function WatchlistProviders() {
             setPage(1);
           }}
           style={{
-            padding: "12px 14px",
+            padding:
+              "12px 14px",
             borderRadius: 12,
             border:
               "1px solid #ccc",
@@ -447,12 +656,12 @@ export default function WatchlistProviders() {
 
       {loading && (
         <div>
-          Loading watchlist...
+          Loading...
         </div>
       )}
 
       {!loading &&
-        paginatedMovies.length >
+        displayMovies.length >
           0 && (
           <>
             <div
@@ -460,10 +669,10 @@ export default function WatchlistProviders() {
                 display: "grid",
                 gridTemplateColumns:
                   "repeat(4, minmax(0, 1fr))",
-                gap: 20
+                gap: 22
               }}
             >
-              {paginatedMovies.map(
+              {displayMovies.map(
                 movie => (
                   <div
                     key={movie.id}
@@ -471,12 +680,12 @@ export default function WatchlistProviders() {
                       background:
                         "white",
                       border:
-                        "1px solid #ddd",
+                        "1px solid #e4e4e4",
                       borderRadius: 18,
                       overflow:
                         "hidden",
                       boxShadow:
-                        "0 2px 10px rgba(0,0,0,0.06)"
+                        "0 2px 12px rgba(0,0,0,0.05)"
                     }}
                   >
                     <div
@@ -523,10 +732,10 @@ export default function WatchlistProviders() {
 
                       <div
                         style={{
-                          color:
-                            "#777",
                           marginTop: 4,
-                          fontSize: 14
+                          fontSize: 14,
+                          color:
+                            "#777"
                         }}
                       >
                         {
@@ -570,8 +779,8 @@ export default function WatchlistProviders() {
                                   provider.provider_name
                                 }
                                 style={{
-                                  width: 36,
-                                  height: 36,
+                                  width: 38,
+                                  height: 38,
                                   borderRadius: 10
                                 }}
                               />
@@ -584,83 +793,94 @@ export default function WatchlistProviders() {
               )}
             </div>
 
-            <div
-              style={{
-                display: "flex",
-                justifyContent:
-                  "center",
-                alignItems:
-                  "center",
-                gap: 14,
-                marginTop: 32
-              }}
-            >
-              <button
-                disabled={
-                  page === 1
-                }
-                onClick={() =>
-                  setPage(
-                    prev =>
-                      prev - 1
-                  )
-                }
+            {searchResults.length ===
+              0 && (
+              <div
                 style={{
-                  padding:
-                    "10px 16px",
-                  borderRadius: 10,
-                  border:
-                    "1px solid #ccc",
-                  background:
-                    "white",
-                  cursor:
-                    "pointer"
+                  display:
+                    "flex",
+                  justifyContent:
+                    "center",
+                  alignItems:
+                    "center",
+                  gap: 14,
+                  marginTop: 32
                 }}
               >
-                Prev
-              </button>
+                <button
+                  disabled={
+                    page === 1
+                  }
+                  onClick={() =>
+                    setPage(
+                      prev =>
+                        prev - 1
+                    )
+                  }
+                  style={{
+                    padding:
+                      "10px 16px",
+                    borderRadius: 10,
+                    border:
+                      "1px solid #ccc",
+                    background:
+                      "white",
+                    cursor:
+                      "pointer"
+                  }}
+                >
+                  Prev
+                </button>
 
-              <div>
-                Page {page} of{" "}
-                {totalPages}
+                <div>
+                  Page {page} of{" "}
+                  {totalPages}
+                </div>
+
+                <button
+                  disabled={
+                    page ===
+                    totalPages
+                  }
+                  onClick={() =>
+                    setPage(
+                      prev =>
+                        prev + 1
+                    )
+                  }
+                  style={{
+                    padding:
+                      "10px 16px",
+                    borderRadius: 10,
+                    border:
+                      "1px solid #ccc",
+                    background:
+                      "white",
+                    cursor:
+                      "pointer"
+                  }}
+                >
+                  Next
+                </button>
               </div>
-
-              <button
-                disabled={
-                  page ===
-                  totalPages
-                }
-                onClick={() =>
-                  setPage(
-                    prev =>
-                      prev + 1
-                  )
-                }
-                style={{
-                  padding:
-                    "10px 16px",
-                  borderRadius: 10,
-                  border:
-                    "1px solid #ccc",
-                  background:
-                    "white",
-                  cursor:
-                    "pointer"
-                }}
-              >
-                Next
-              </button>
-            </div>
+            )}
           </>
         )}
 
       {!loading &&
-        movies.length > 0 &&
-        filteredMovies.length ===
+        displayMovies.length ===
           0 && (
-          <div>
-            No movies found for
-            selected provider.
+          <div
+            style={{
+              textAlign:
+                "center",
+              color: "#777",
+              marginTop: 60
+            }}
+          >
+            Search for a movie or
+            upload a Letterboxd
+            watchlist.
           </div>
         )}
     </div>
