@@ -190,29 +190,38 @@ export default function WatchlistProviders() {
   const [page, setPage] =
     useState(1);
 
-  async function enrichMovie(
-    movie,
-    selectedCountry
-  ) {
-    const providers =
-      await fetchProviders(
-        movie.id,
-        selectedCountry
-      );
-
-    return {
-      id: movie.id,
-      title: movie.title,
-      year:
-        movie.release_date?.slice(
-          0,
-          4
-        ) || "",
-      poster:
-        movie.poster_path,
-      providers
-    };
-  }
+    async function enrichMovie(
+      movie,
+      selectedCountry
+    ) {
+      const providers =
+        await fetchProviders(
+          movie.id,
+          selectedCountry
+        );
+    
+      return {
+        id: movie.id,
+    
+        title:
+          movie.title,
+    
+        year:
+          movie.release_date?.slice(
+            0,
+            4
+          ) ||
+          movie.year ||
+          "",
+    
+        poster:
+          movie.poster_path ||
+          movie.poster ||
+          null,
+    
+        providers
+      };
+    }
 
   async function processMovies(
     parsedMovies,
